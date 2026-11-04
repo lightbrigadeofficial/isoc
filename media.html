@@ -1,0 +1,603 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>ISOC - Media</title>
+
+  <link rel="icon" type="image/png" href="web_media/2.png">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="media.css">
+
+</head>
+
+
+<body>
+
+<div class="top"></div>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
+<nav>
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <img src="web_media/INSIGNIA-removebg-preview.png" alt="ISOC Logo" class="nav-logo">
+      <span>ISOC HQ</span>
+    </a>
+
+    <div class="links">
+                
+        <a href="index.html">
+          Home
+        </a>
+      <!-- <a href="index.html#about">FACTION STATS</a> -->
+
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" type="button" aria-expanded="false">
+          HEADQUARTERS <span class="nav-chevron">▾</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a href="ranks.html" class="nav-dropdown-item">
+            <span class="dropdown-index">01</span>
+            <span>
+              <strong>RANKS</strong>
+              <small>Rank structure &amp; requirements</small>
+            </span>
+          </a>
+          <a href="roster.html" class="nav-dropdown-item">
+            <span class="dropdown-index">02</span>
+            <span>
+              <strong>ROSTER</strong>
+              <small>Faction personnel directory</small>
+            </span>
+          </a>
+          <a href="appointments.html" class="nav-dropdown-item">
+            <span class="dropdown-index">03</span>
+            <span>
+              <strong>ORBAT</strong>
+              <small>Organization &amp; appointments</small>
+            </span>
+          </a>
+          <!-- <a href="awards.html" class="nav-dropdown-item">
+            <span class="dropdown-index">04</span>
+            <span>
+              <strong>DECORATIONS</strong>
+              <small>Tabs, badges &amp; decorations</small>
+            </span>
+          </a> -->
+           <!-- <a href="qualifications.html" class="nav-dropdown-item">
+            <span class="dropdown-index">05</span>
+            <span>
+              <strong>QUALIFICATIONS</strong>
+              <small>Courses, trainings &amp; evaluation boards</small>
+            </span>
+          </a> -->
+          <a href="armoury.html"class="nav-dropdown-item">
+            <span class="dropdown-index">04</span>
+            <span>
+              <strong>ARMOURY</strong>
+              <small>Sanctioned weapon systems &amp; mods</small>
+            </span>
+          </a>
+          <a href="uniforms.html" class="nav-dropdown-item">
+            <span class="dropdown-index">05</span>
+            <span>
+              <strong>UNIFORMS</strong>
+              <small>Faction dress &amp; uniform codes</small>
+            </span>
+          </a>
+        </div>
+      </div>
+      <!-- <a href="help.html">HELP CENTRE</a> -->
+       <a href="who-we-are.html">WHO WE ARE</a>
+      <a href="media.html">SHOWCASE</a>
+      <a href="documentation.html">DOCUMENTATION</a>
+    </div>
+
+    <div class="nav-actions">
+      <a href="https://discord.gg/BPrtmmkZ6" class="discord-btn" target="_blank" rel="noopener">JOIN DISCORD</a>
+      <a href="login.html" class="enlist-btn">
+        <span class="enlist-text">LOGIN</span>
+        <span class="enlist-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- =========================================================
+     TIME STRIP
+========================================================= -->
+
+<div class="time-strip">
+
+    <div class="wrap time-strip-inner">
+
+        <div class="time-block">
+
+            <span class="time-label">
+                ISOC HQ
+            </span>
+
+            <span
+                id="hq-time"
+                class="time-value"
+            >
+                --:--:--
+            </span>
+
+            <span class="time-zone">
+                IST
+            </span>
+
+        </div>
+
+
+        <div class="time-divider"></div>
+
+
+        <div class="time-block">
+
+            <span class="time-label">
+                YOUR LOCAL TIME
+            </span>
+
+            <span
+                id="local-time"
+                class="time-value"
+            >
+                --:--:--
+            </span>
+
+            <span
+                id="local-zone"
+                class="time-zone"
+            >
+                LOCAL
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     MEDIA PAGE
+========================================================= -->
+
+<main class="media-page">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="media-hero">
+
+        <div class="wrap">
+
+            <div class="media-hero-grid">
+
+
+                <div>
+
+                    <div class="k">
+                        HEADQUARTERS // MEDIA ARCHIVE
+                    </div>
+
+
+                    <h1>
+                        SHOWCASE
+                    </h1>
+
+
+                    <p>
+                        Official ISOC imagery documenting
+                        operations, training, exercises,
+                        aviation and organizational events.
+                    </p>
+
+                </div>
+
+
+                <div class="media-reference">
+
+                    <span>
+                        ARCHIVE
+                    </span>
+
+                    <strong>
+                        SHOWCASE // 2026
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         MEDIA ARCHIVE
+    ====================================================== -->
+
+    <section class="media-section">
+
+        <div class="wrap">
+
+
+            <!-- FILTER BAR -->
+
+            <div class="media-toolbar">
+
+                <div class="media-toolbar-label">
+                    ARCHIVE FILTER
+                </div>
+
+
+                <div class="media-filters">
+
+                    <button
+                        class="media-filter active"
+                        type="button"
+                        data-filter="ALL"
+                    >
+                        ALL
+                    </button>
+
+
+                    <button
+                        class="media-filter"
+                        type="button"
+                        data-filter="OPERATIONS"
+                    >
+                        OPERATIONS
+                    </button>
+
+
+                    <button
+                        class="media-filter"
+                        type="button"
+                        data-filter="TRAINING"
+                    >
+                        TRAINING
+                    </button>
+
+
+                    <button
+                        class="media-filter"
+                        type="button"
+                        data-filter="AVIATION"
+                    >
+                        AVIATION
+                    </button>
+
+
+                    <button
+                        class="media-filter"
+                        type="button"
+                        data-filter="EVENTS"
+                    >
+                        EVENTS
+                    </button>
+
+                </div>
+
+            </div>
+
+
+            <!-- GALLERY -->
+
+            <div
+                id="mediaGallery"
+                class="media-gallery"
+            ></div>
+
+
+        </div>
+
+    </section>
+
+
+</main>
+
+
+<!-- =========================================================
+     LIGHTBOX
+========================================================= -->
+
+<!-- =========================================================
+     FULLSCREEN MEDIA VIEWER
+========================================================= -->
+
+<div
+    id="mediaLightbox"
+    class="media-lightbox"
+    aria-hidden="true"
+>
+
+    <button
+        id="lightboxClose"
+        class="lightbox-close"
+        type="button"
+        aria-label="Close image viewer"
+    >
+        ×
+    </button>
+
+
+    <div class="lightbox-inner">
+
+
+        <div class="lightbox-image-wrap">
+
+            <img
+                id="lightboxImage"
+                src=""
+                alt=""
+                draggable="false"
+            >
+
+        </div>
+
+
+        <div class="lightbox-info">
+
+            <div
+                id="lightboxMeta"
+                class="lightbox-meta"
+            ></div>
+
+
+            <div
+                id="lightboxTitle"
+                class="lightbox-title"
+            ></div>
+
+
+            <p
+                id="lightboxDescription"
+                class="lightbox-description"
+            ></p>
+
+        </div>
+
+
+        <div class="lightbox-controls">
+
+            <button
+                id="zoomOut"
+                class="lightbox-control"
+                type="button"
+                aria-label="Zoom out"
+            >
+                −
+            </button>
+
+
+            <button
+                id="zoomReset"
+                class="lightbox-control"
+                type="button"
+                aria-label="Reset zoom"
+            >
+                1:1
+            </button>
+
+
+            <button
+                id="zoomIn"
+                class="lightbox-control"
+                type="button"
+                aria-label="Zoom in"
+            >
+                +
+            </button>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="site-footer">
+
+    <!-- TOP COPYRIGHT LINE -->
+    <div class="footer-top">
+
+        <div class="wrap footer-top-inner">© 2026 INTERNATIONAL SPECIAL OPERATIONS COMMAND HEADQUARTERS — ALL RIGHTS RESERVED. DEVELOPED BY <a href="https://www.instagram.com/obi_onenairobi/"><b><u>VANDAM</u></b></a></div>
+
+    </div>
+
+
+    <!-- MAIN FOOTER -->
+    <div class="footer-main">
+
+        <div class="wrap footer-grid">
+
+
+            <!-- =================================================
+                 ORGANIZATION INFO
+            ================================================== -->
+
+            <div class="footer-brand">
+
+                <div class="footer-brand-title">
+
+                    <img src="web_media/INSIGNIA-removebg-preview.png" alt="isoc Logo" class="footer-logo">
+
+                    <div>
+
+                        <strong>
+                            INTERNATIONAL SPECIAL OPERATIONS COMMAND
+                        </strong>
+
+                        <small>
+                            ISOC // HEADQUARTERS
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <p>
+                    An international Roblox military realism
+                    organization focused on structured and bad*ss
+                    special operations, training,
+                    aviation and joint exercises.
+                </p>
+
+
+                <em>
+                    "MEN APART, EVERY MAN AN EMPEROR"
+                </em>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NAVIGATION
+            ================================================== -->
+
+            <div class="footer-column">
+
+                <h4>
+                    NAVIGATION
+                </h4>
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="ranks.html">
+                    Ranks
+                </a>
+
+                <a href="roster.html">
+                    Roster
+                </a>
+
+                <a href="appointments.html">
+                    ORBAT
+                </a>
+
+                <!-- <a href="awards.html">
+                    Decorations
+                </a>
+
+                <a href="qualifications.html">
+                    Qualifications
+                </a> -->
+                <a href="armoury.html">
+                    Armoury
+                </a>
+                <a href="uniforms.html">
+                    Uniforms
+                </a>
+                <!-- <a href="#">
+                    Job Centre
+                </a> -->
+               <a href="who-we-are.html">
+                    Who We Are
+                </a>
+                <a href="media.html">
+                    Showcase
+                </a>
+                <a href="documentation.html">
+                    Documentation
+                </a>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 UNIT INFORMATION
+            ================================================== -->
+
+            <div class="footer-column">
+
+                <h4>
+                    UNIT INFO
+                </h4>
+
+                <span>
+                    Game: BRM5 & ARMA 3
+                </span>
+
+                <span>
+                    Type: Military Realism (Milsim)
+                </span>
+
+                <span>
+                    Formation: Unit
+                </span>
+
+                <span>
+                    INTERNATIONAL SPECIAL OPERATIONS COMMAND
+                </span>
+
+                <span>
+                    Region: International
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         BOTTOM LEGAL LINE
+    ========================================================== -->
+
+    <div class="footer-bottom">
+
+        <div class="wrap footer-bottom-inner">
+
+            <span>
+                © 2026 International Special Operations Command —
+                Fictional gaming organization.
+            </span>
+
+            <span>
+                Not affiliated with any government or military organization.
+            </span>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<!-- =========================================================
+     JAVASCRIPT
+========================================================= -->
+
+<script src="script.js"></script>
+<script src="media.js"></script>
+
+</body>
+
+</html>

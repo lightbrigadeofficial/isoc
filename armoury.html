@@ -6,13 +6,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title>KSOL - Armoury</title>
+    <title>ISOC - Armoury</title>
 
-    <link
-        rel="icon"
-        type="image/png"
-        href="KSOL_Emblem_Transparent.png"
-    >
+  <link rel="icon" type="image/png" href="web_media/2.png">
 
     <link rel="stylesheet" href="styles.css">
     <link rel="stylesheet" href="armoury.css">
@@ -100,6 +96,7 @@
         </div>
       </div>
       <!-- <a href="help.html">HELP CENTRE</a> -->
+       <a href="who-we-are.html">WHO WE ARE</a>
       <a href="media.html">SHOWCASE</a>
       <a href="documentation.html">DOCUMENTATION</a>
     </div>
@@ -126,7 +123,7 @@
         <div class="time-block">
 
             <span class="time-label">
-                KSOL HQ
+                ISOC HQ
             </span>
 
             <span
@@ -191,7 +188,7 @@
             <div class="hero-copy">
 
                 <div class="hero-kicker">
-                    KSOL // EQUIPMENT SYSTEMS
+                    ISOC // EQUIPMENT SYSTEMS
                 </div>
 
 
@@ -201,10 +198,7 @@
 
 
                 <p>
-                    Official KSOL catalogue of authorized
-                    fictional in-game equipment systems,
-                    role classifications and approved
-                    configurations.
+                    The proposed ISOC weapon register for BRM5, with force eligibility and two optional build recommendations per weapon. This selection is not final.
                 </p>
 
             </div>
@@ -219,7 +213,7 @@
                     </span>
 
                     <strong>
-                        KSOL-ARM
+                        ISOC-ARM
                     </strong>
 
                 </div>
@@ -261,6 +255,12 @@
          CATALOGUE CONTROLS
     ====================================================== -->
 
+    <section class="armoury-policy wrap" aria-label="Armoury policy">
+      <div class="policy-mark">AUTHORIZATION POLICY</div>
+      <div class="policy-copy"><strong>PROPOSED WEAPON LIST ≠ BUILD RESTRICTION</strong><p>This is a proposed weapon register and is not final. The two builds shown on each weapon page are recommendations only — not mandatory SOPs. You may customize your in-game loadout freely. 160th SOAR pilots may select any listed assault rifle, sub-machine gun or secondary. The M14 EBR is requested but is not currently available in-game; a community-made replica would be welcome.</p></div>
+      <div class="policy-count"><strong>02</strong><span>OPTIONAL BUILDS<br>PER WEAPON</span></div>
+    </section>
+
     <section class="catalogue-navigation">
 
         <div class="wrap">
@@ -297,141 +297,14 @@
             </div>
 
 
-            <!-- FAMILY SELECTOR -->
-
-            <div class="family-selector">
-
-                <button
-                    class="family-tab active"
-                    type="button"
-                    data-category="standard"
-                >
-
-                    <span class="family-index">
-                        01
-                    </span>
-
-                    <span class="family-main">
-
-                        <strong>
-                            STANDARD ISSUE
-                        </strong>
-
-                        <small>
-                            ROLE-BASED SYSTEMS
-                        </small>
-
-                    </span>
-
-                    <span class="family-arrow">
-                        →
-                    </span>
-
-                </button>
-
-
-                <button
-                    class="family-tab"
-                    type="button"
-                    data-category="sopmod"
-                >
-
-                    <span class="family-index">
-                        02
-                    </span>
-
-                    <span class="family-main">
-
-                        <strong>
-                            SOPMOD
-                        </strong>
-
-                        <small>
-                            SPECIAL OPERATIONS SYSTEMS
-                        </small>
-
-                    </span>
-
-                    <span class="family-arrow">
-                        →
-                    </span>
-
-                </button>
-
+            <!-- WEAPON TYPE / ROLE / SITUATION FILTERS -->
+            <div class="armoury-filter-panel">
+                <div id="weaponTypeFilters" class="role-selector" aria-label="Filter by weapon type"></div>
+                <div class="armoury-select-filters">
+                    <label>ROLE <select id="roleFilter"><option value="">ALL ROLES</option></select></label>
+                    <label>USE CASE <select id="situationFilter"><option value="">ALL SITUATIONS</option></select></label>
+                </div>
             </div>
-
-
-            <!-- ROLE SELECTOR -->
-
-            <div
-                id="standardRoles"
-                class="role-selector"
-            >
-
-                <button
-                    class="role-tab active"
-                    type="button"
-                    data-role="si"
-                >
-                    STANDARD ISSUE
-                </button>
-
-
-                <button
-                    class="role-tab"
-                    type="button"
-                    data-role="autorifleman"
-                >
-                    AUTO RIFLEMAN
-                </button>
-
-
-                <button
-                    class="role-tab"
-                    type="button"
-                    data-role="teamleader"
-                >
-                    TEAM LEADER
-                </button>
-
-
-                <button
-                    class="role-tab"
-                    type="button"
-                    data-role="squadleader"
-                >
-                    SQUAD LEADER
-                </button>
-
-
-                <button
-                    class="role-tab"
-                    type="button"
-                    data-role="marksman"
-                >
-                    MARKSMAN
-                </button>
-
-
-                <button
-                    class="role-tab"
-                    type="button"
-                    data-role="sniper"
-                >
-                    SNIPER
-                </button>
-
-
-                <button
-                    class="role-tab"
-                    type="button"
-                    data-role="pilot"
-                >
-                    PILOT
-                </button>
-
-            </div>
-
         </div>
 
     </section>
@@ -502,7 +375,7 @@
             <div class="catalogue-note">
 
                 <span>
-                    KSOL / ARM
+                    ISOC / ARM
                 </span>
 
 
@@ -514,7 +387,7 @@
 
                     <p>
                         Equipment information is maintained
-                        manually by KSOL Headquarters and
+                        manually by ISOC Headquarters and
                         applies to the fictional in-game
                         environment only.
                     </p>
@@ -548,7 +421,7 @@
         <div class="product-modal-bar">
 
             <span id="modalId">
-                KSOL-000
+                ISOC-000
             </span>
 
             <button
@@ -571,12 +444,16 @@
 
                 <div class="product-image-background">
 
-                    <img
-                        id="modalImage"
-                        class="product-main-image"
-                        src=""
-                        alt=""
-                    >
+                    <div id="modal360Viewer" class="modal-360-viewer" tabindex="0" role="group" aria-label="360 degree equipment image viewer">
+                        <img id="modalImage" class="product-main-image" src="" alt="">
+                        <div class="viewer-frame-status" id="viewerFrameStatus">360° FRAME SET NOT ADDED</div>
+                        <div class="viewer-controls" aria-label="360 degree viewer controls">
+                            <button type="button" id="viewerPrev" aria-label="Previous angle" disabled>←</button>
+                            <span id="viewerFrameCount" aria-live="polite">STATIC IMAGE</span>
+                            <button type="button" id="viewerNext" aria-label="Next angle" disabled>→</button>
+                        </div>
+                        <div class="viewer-drag-hint" id="viewerDragHint">DRAG TO ROTATE</div>
+                    </div>
 
                 </div>
 
@@ -648,11 +525,11 @@
             <div class="detail-section-heading">
 
                 <span>
-                    CONFIGURATION ARCHITECTURE
+                    TWO RECOMMENDED CONFIGURATIONS
                 </span>
 
                 <small>
-                    AUTHORIZED IN-GAME VARIANTS
+                    OPTIONAL STARTING POINTS · CUSTOMIZE FREELY
                 </small>
 
             </div>
@@ -677,7 +554,7 @@
             <span>
                 All specifications and configurations
                 displayed on this page refer to fictional
-                in-game equipment within the KSOL
+                in-game equipment within the ISOC
                 environment.
             </span>
 
@@ -791,6 +668,9 @@
                 <!-- <a href="#">
                     Job Centre
                 </a> -->
+                <a href="who-we-are.html">
+                    Who We Are
+                </a>
                 <a href="media.html">
                     Showcase
                 </a>
@@ -861,7 +741,6 @@
     </div>
 
 </footer>
-
 
 
 <script src="script.js"></script>

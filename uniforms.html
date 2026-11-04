@@ -1,0 +1,951 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+
+    <title>KSOL - Uniforms</title>
+
+  <link rel="icon" type="image/png" href="web_media/2.png">
+
+    <link rel="stylesheet" href="styles.css">
+    <link rel="stylesheet" href="uniforms.css">
+
+</head>
+
+
+<body>
+
+<div class="top"></div>
+
+
+<!-- =========================================================
+     NAVIGATION
+========================================================= -->
+
+<nav>
+  <div class="wrap nav">
+    <a class="brand" href="index.html">
+      <img src="web_media/INSIGNIA-removebg-preview.png" alt="ISOC Logo" class="nav-logo">
+      <span>ISOC HQ</span>
+    </a>
+
+    <div class="links">
+                
+        <a href="index.html">
+          Home
+        </a>
+      <!-- <a href="index.html#about">FACTION STATS</a> -->
+
+      <div class="nav-dropdown">
+        <button class="nav-dropdown-toggle" type="button" aria-expanded="false">
+          HEADQUARTERS <span class="nav-chevron">▾</span>
+        </button>
+        <div class="nav-dropdown-menu">
+          <a href="ranks.html" class="nav-dropdown-item">
+            <span class="dropdown-index">01</span>
+            <span>
+              <strong>RANKS</strong>
+              <small>Rank structure &amp; requirements</small>
+            </span>
+          </a>
+          <a href="roster.html" class="nav-dropdown-item">
+            <span class="dropdown-index">02</span>
+            <span>
+              <strong>ROSTER</strong>
+              <small>Faction personnel directory</small>
+            </span>
+          </a>
+          <a href="appointments.html" class="nav-dropdown-item">
+            <span class="dropdown-index">03</span>
+            <span>
+              <strong>ORBAT</strong>
+              <small>Organization &amp; appointments</small>
+            </span>
+          </a>
+          <!-- <a href="awards.html" class="nav-dropdown-item">
+            <span class="dropdown-index">04</span>
+            <span>
+              <strong>DECORATIONS</strong>
+              <small>Tabs, badges &amp; decorations</small>
+            </span>
+          </a> -->
+           <!-- <a href="qualifications.html" class="nav-dropdown-item">
+            <span class="dropdown-index">05</span>
+            <span>
+              <strong>QUALIFICATIONS</strong>
+              <small>Courses, trainings &amp; evaluation boards</small>
+            </span>
+          </a> -->
+          <a href="armoury.html"class="nav-dropdown-item">
+            <span class="dropdown-index">04</span>
+            <span>
+              <strong>ARMOURY</strong>
+              <small>Sanctioned weapon systems &amp; mods</small>
+            </span>
+          </a>
+          <a href="uniforms.html" class="nav-dropdown-item">
+            <span class="dropdown-index">05</span>
+            <span>
+              <strong>UNIFORMS</strong>
+              <small>Faction dress &amp; uniform codes</small>
+            </span>
+          </a>
+        </div>
+      </div>
+      <!-- <a href="help.html">HELP CENTRE</a> -->
+       <a href="who-we-are.html">WHO WE ARE</a>
+      <a href="media.html">SHOWCASE</a>
+      <a href="documentation.html">DOCUMENTATION</a>
+    </div>
+
+    <div class="nav-actions">
+      <a href="https://discord.gg/BPrtmmkZ6" class="discord-btn" target="_blank" rel="noopener">JOIN DISCORD</a>
+      <a href="login.html" class="enlist-btn">
+        <span class="enlist-text">LOGIN</span>
+        <span class="enlist-arrow">→</span>
+      </a>
+    </div>
+  </div>
+</nav>
+
+
+<!-- =========================================================
+     TIME STRIP
+========================================================= -->
+
+<div class="time-strip">
+
+    <div class="wrap time-strip-inner">
+
+        <div class="time-block">
+
+            <span class="time-label">
+                KSOL HQ
+            </span>
+
+            <span
+                id="hq-time"
+                class="time-value"
+            >
+                --:--:--
+            </span>
+
+            <span class="time-zone">
+                IST
+            </span>
+
+        </div>
+
+
+        <div class="time-divider"></div>
+
+
+        <div class="time-block">
+
+            <span class="time-label">
+                YOUR LOCAL TIME
+            </span>
+
+            <span
+                id="local-time"
+                class="time-value"
+            >
+                --:--:--
+            </span>
+
+            <span
+                id="local-zone"
+                class="time-zone"
+            >
+                LOCAL
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     PAGE
+========================================================= -->
+
+<main class="uniforms-page">
+
+
+    <!-- =====================================================
+         HERO
+    ====================================================== -->
+
+    <section class="uniforms-hero">
+
+        <div class="wrap uniforms-hero-wrap">
+
+            <div class="uniforms-hero-copy">
+
+                <div class="hero-kicker">
+                    KSOL // UNIFORM SYSTEMS
+                </div>
+
+
+                <h1>
+                    UNIFORMS
+                </h1>
+
+
+                <p>
+                    Authorized fictional in-game uniform
+                    specifications, classifications and
+                    approved appearance standards for KSOL
+                    personnel.
+                </p>
+
+            </div>
+
+
+            <div class="uniform-reference">
+
+                <div class="reference-row">
+
+                    <span>
+                        CATALOGUE
+                    </span>
+
+                    <strong>
+                        KSOL-UFM
+                    </strong>
+
+                </div>
+
+
+                <div class="reference-row">
+
+                    <span>
+                        REVISION
+                    </span>
+
+                    <strong>
+                        2026.11
+                    </strong>
+
+                </div>
+
+
+                <div class="reference-row">
+
+                    <span>
+                        REGISTER
+                    </span>
+
+                    <strong>
+                        ACTIVE
+                    </strong>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         SEARCH / NAVIGATION
+    ====================================================== -->
+
+    <section class="uniform-navigation">
+
+        <div class="wrap">
+
+
+            <!-- SEARCH -->
+
+            <div class="uniform-search">
+
+                <div class="search-label">
+                    UNIFORM CATALOGUE
+                </div>
+
+
+                <div class="search-field">
+
+                    <span class="search-symbol">
+                        /
+                    </span>
+
+
+                    <input
+                        id="uniformSearch"
+                        type="search"
+                        placeholder="Search uniform, designation, category..."
+                        autocomplete="off"
+                    >
+
+
+                    <kbd>
+                        CTRL K
+                    </kbd>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 CATEGORY HEADING
+            ================================================== -->
+
+            <div class="standard-heading">
+
+                <div>
+
+                    <span>
+                        01—03
+                    </span>
+
+                    <strong>
+                        FORCE CATALOGUE
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <!-- =================================================
+                 TOP LEVEL CATEGORIES
+            ================================================== -->
+
+            <div class="uniform-category-selector">
+
+
+                <!-- SAS -->
+
+                <button
+                    class="uniform-category-tab active"
+                    type="button"
+                    data-category="sas"
+                >
+
+                    <span class="category-index">
+                        01
+                    </span>
+
+
+                    <span class="category-content">
+
+                        <strong>
+                            SAS
+                        </strong>
+
+                        <small>
+                            MTP FIELD UNIFORM
+                        </small>
+
+                    </span>
+
+
+                    <span class="category-arrow">
+                        →
+                    </span>
+
+                </button>
+
+
+                <!-- SEALS -->
+
+                <button
+                    class="uniform-category-tab"
+                    type="button"
+                    data-category="seals"
+                >
+
+                    <span class="category-index">
+                        02
+                    </span>
+
+
+                    <span class="category-content">
+
+                        <strong>
+                            S E A L S
+                        </strong>
+
+                        <small>
+                            FOUR AUTHORIZED PATTERN FAMILIES
+                        </small>
+
+                    </span>
+
+
+                    <span class="category-arrow">
+                        →
+                    </span>
+
+                </button>
+
+
+                <!-- 160TH SOAR -->
+
+                <button
+                    class="uniform-category-tab"
+                    type="button"
+                    data-category="soar"
+                >
+
+                    <span class="category-index">
+                        03
+                    </span>
+
+
+                    <span class="category-content">
+
+                        <strong>
+                            160TH SOAR
+                        </strong>
+
+                        <small>
+                            VARICAM FIELD UNIFORM
+                        </small>
+
+                    </span>
+
+
+                    <span class="category-arrow">
+                        →
+                    </span>
+
+                </button>
+
+
+            </div>
+
+
+            <!-- =================================================
+                 SEALS PATTERN FAMILIES
+            ================================================== -->
+
+            <div
+                id="standardRoles"
+                class="role-selector"
+            >
+
+                <button
+                    class="uniform-role-tab active"
+                    type="button"
+                    data-role="bdu"
+                >
+                    BDU
+                </button>
+
+
+                <button
+                    class="uniform-role-tab"
+                    type="button"
+                    data-role="dcu"
+                >
+                    DCU
+                </button>
+
+
+                <button
+                    class="uniform-role-tab"
+                    type="button"
+                    data-role="aor1"
+                >
+                    AOR1
+                </button>
+
+                <button
+                    class="uniform-role-tab"
+                    type="button"
+                    data-role="aor2"
+                >
+                    AOR2
+                </button>
+
+            </div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         CATALOGUE
+    ====================================================== -->
+
+    <section class="uniform-catalogue">
+
+        <div class="wrap">
+
+
+            <div class="catalogue-heading">
+
+                <div>
+
+                    <div
+                        id="catalogueCategory"
+                        class="catalogue-kicker"
+                    >
+                        SAS
+                    </div>
+
+
+                    <h2 id="catalogueTitle">
+                        MTP FIELD UNIFORM
+                    </h2>
+
+                </div>
+
+
+                <div class="catalogue-count">
+
+                    <span>
+                        SYSTEMS
+                    </span>
+
+
+                    <strong id="uniformCount">
+                        00
+                    </strong>
+
+                </div>
+
+            </div>
+
+
+            <div
+                id="uniformGrid"
+                class="uniform-grid"
+            ></div>
+
+        </div>
+
+    </section>
+
+
+    <!-- =====================================================
+         NOTICE
+    ====================================================== -->
+
+    <section class="uniforms-notice">
+
+        <div class="wrap">
+
+            <div class="notice-grid">
+
+                <span>
+                    KSOL / UFM
+                </span>
+
+
+                <div>
+
+                    <strong>
+                        UNIFORM CONTROL
+                    </strong>
+
+
+                    <p>
+                        SAS personnel wear MTP and 160th SOAR personnel wear Varicam. SEALS personnel may freely mix components from the BDU, DCU, AOR1 and AOR2 families. Civilian attire, including civilian-and-tactical combinations, is restricted to specifically selected members holding a written allowance letter issued by the Commander of ISOC. All specifications refer to fictional in-game KSOL appearance standards.
+                    </p>
+
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+</main>
+
+
+<!-- =========================================================
+     DETAIL MODAL
+========================================================= -->
+
+<div
+    id="uniformModal"
+    class="uniform-modal"
+    aria-hidden="true"
+>
+
+    <div class="uniform-product">
+
+
+        <!-- HEADER -->
+
+        <div class="uniform-product-bar">
+
+            <span id="modalDesignation">
+                KSOL-UFM-000
+            </span>
+
+
+            <button
+                id="uniformModalClose"
+                type="button"
+                class="uniform-modal-close"
+                aria-label="Close"
+            >
+                ×
+            </button>
+
+        </div>
+
+
+        <!-- =================================================
+             MAIN PRODUCT
+        ================================================== -->
+
+        <div class="uniform-product-main">
+
+
+            <div class="uniform-product-image">
+
+                <div class="uniform-image-stage">
+
+                    <video
+                        id="uniformModalVideo"
+                        class="uniform-media-video"
+                        muted
+                        autoplay
+                        loop
+                        playsinline
+                        preload="metadata"
+                        aria-label="Uniform video preview"
+                    ></video>
+
+                </div>
+
+            </div>
+
+
+            <div class="uniform-product-copy">
+
+                <div
+                    id="modalCategory"
+                    class="product-kicker"
+                >
+                    STANDARD ISSUE
+                </div>
+
+
+                <h2 id="modalTitle">
+                    UNIFORM
+                </h2>
+
+
+                <p
+                    id="modalDescription"
+                    class="uniform-description"
+                ></p>
+
+
+                <div
+                    id="modalStatus"
+                    class="uniform-status"
+                >
+                    AUTHORIZED
+                </div>
+
+            </div>
+
+        </div>
+
+
+        <!-- =================================================
+             SPECIFICATION
+        ================================================== -->
+
+        <div class="uniform-details">
+
+            <div class="detail-heading">
+
+                <span>
+                    UNIFORM SPECIFICATION
+                </span>
+
+                <small>
+                    AUTHORIZED APPEARANCE
+                </small>
+
+            </div>
+
+
+            <div
+                id="modalSpecs"
+                class="uniform-spec-grid"
+            ></div>
+
+        </div>
+
+
+        <!-- =================================================
+             COMPONENTS
+        ================================================== -->
+
+        <div class="uniform-components">
+
+            <div class="detail-heading">
+
+                <span>
+                    UNIFORM COMPONENTS
+                </span>
+
+                <small>
+                    CONFIGURATION REQUIREMENTS
+                </small>
+
+            </div>
+
+
+            <div
+                id="modalComponents"
+                class="component-list"
+            ></div>
+
+        </div>
+
+
+        <!-- =================================================
+             VARIANTS
+        ================================================== -->
+
+        <div class="uniform-variants">
+
+            <div class="detail-heading">
+
+                <span>
+                    APPROVED VARIANTS
+                </span>
+
+                <small>
+                    APPEARANCE ARCHIVE
+                </small>
+
+            </div>
+
+
+            <div
+                id="modalVariants"
+                class="variant-grid"
+            ></div>
+
+        </div>
+
+
+        <!-- =================================================
+             NOTICE
+        ================================================== -->
+
+        <div class="uniform-disclaimer">
+
+            <strong>
+                CATALOGUE NOTICE
+            </strong>
+
+
+            <span>
+                All information displayed refers to fictional
+                in-game KSOL uniform systems.
+            </span>
+
+        </div>
+
+    </div>
+
+</div>
+
+
+<!-- =========================================================
+     FOOTER
+========================================================= -->
+
+<footer class="site-footer">
+
+    <!-- TOP COPYRIGHT LINE -->
+    <div class="footer-top">
+
+        <div class="wrap footer-top-inner">© 2026 INTERNATIONAL SPECIAL OPERATIONS COMMAND HEADQUARTERS — ALL RIGHTS RESERVED. DEVELOPED BY <a href="https://www.instagram.com/obi_onenairobi/"><b><u>VANDAM</u></b></a></div>
+
+    </div>
+
+
+    <!-- MAIN FOOTER -->
+    <div class="footer-main">
+
+        <div class="wrap footer-grid">
+
+
+            <!-- =================================================
+                 ORGANIZATION INFO
+            ================================================== -->
+
+            <div class="footer-brand">
+
+                <div class="footer-brand-title">
+
+                    <img src="web_media/INSIGNIA-removebg-preview.png" alt="KSOL Logo" class="footer-logo">
+
+                    <div>
+
+                        <strong>
+                            INTERNATIONAL SPECIAL OPERATIONS COMMAND
+                        </strong>
+
+                        <small>
+                            ISOC // HEADQUARTERS
+                        </small>
+
+                    </div>
+
+                </div>
+
+
+                <p>
+                    An international Roblox military realism
+                    organization focused on structured and bad*ss
+                    special operations, training,
+                    aviation and joint exercises.
+                </p>
+
+
+                <em>
+                    "MEN APART, EVERY MAN AN EMPEROR"
+                </em>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 NAVIGATION
+            ================================================== -->
+
+            <div class="footer-column">
+
+                <h4>
+                    NAVIGATION
+                </h4>
+
+                <a href="index.html">
+                    Home
+                </a>
+
+                <a href="ranks.html">
+                    Ranks
+                </a>
+
+                <a href="roster.html">
+                    Roster
+                </a>
+
+                <a href="appointments.html">
+                    ORBAT
+                </a>
+
+                <!-- <a href="awards.html">
+                    Decorations
+                </a>
+
+                <a href="qualifications.html">
+                    Qualifications
+                </a> -->
+                <a href="armoury.html">
+                    Armoury
+                </a>
+                <a href="uniforms.html">
+                    Uniforms
+                </a>
+                <!-- <a href="#">
+                    Job Centre
+                </a> -->
+                <a href="who-we-are.html">
+                    Who We Are
+                </a>
+                <a href="media.html">
+                    Showcase
+                </a>
+                <a href="documentation.html">
+                    Documentation
+                </a>
+
+            </div>
+
+
+
+            <!-- =================================================
+                 UNIT INFORMATION
+            ================================================== -->
+
+            <div class="footer-column">
+
+                <h4>
+                    UNIT INFO
+                </h4>
+
+                <span>
+                    Game: BRM5 & ARMA 3
+                </span>
+
+                <span>
+                    Type: Military Realism (Milsim)
+                </span>
+
+                <span>
+                    Formation: Unit
+                </span>
+
+                <span>
+                    INTERNATIONAL SPECIAL OPERATIONS COMMAND
+                </span>
+
+                <span>
+                    Region: International
+                </span>
+
+            </div>
+
+        </div>
+
+    </div>
+
+
+    <!-- =========================================================
+         BOTTOM LEGAL LINE
+    ========================================================== -->
+
+    <div class="footer-bottom">
+
+        <div class="wrap footer-bottom-inner">
+
+            <span>
+                © 2026 International Special Operations Command —
+                Fictional gaming organization.
+            </span>
+
+            <span>
+                Not affiliated with any government or military organization.
+            </span>
+
+        </div>
+
+    </div>
+
+</footer>
+
+
+<script src="script.js"></script>
+<script src="uniforms.js"></script>
+
+</body>
+
+</html>

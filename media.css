@@ -1,0 +1,856 @@
+/* =========================================================
+   KSOL MEDIA SHOWCASE
+========================================================= */
+
+.media-page {
+    min-height: 100vh;
+}
+
+
+/* =========================================================
+   HERO
+========================================================= */
+
+.media-hero {
+    padding: 105px 0 75px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+
+.media-hero-grid {
+    display: flex;
+
+    align-items: flex-end;
+
+    justify-content: space-between;
+
+    gap: 50px;
+}
+
+
+.media-hero h1 {
+    margin: 12px 0 18px;
+
+    color: var(--white);
+
+    font-size: clamp(60px, 9vw, 110px);
+
+    line-height: 0.84;
+
+    letter-spacing: -0.07em;
+}
+
+
+.media-hero p {
+    max-width: 650px;
+
+    margin: 0;
+
+    color: #858585;
+
+    font-size: 14px;
+
+    line-height: 1.75;
+}
+
+
+.media-reference {
+    min-width: 175px;
+
+    padding: 18px 20px;
+
+    border: 1px solid #292929;
+
+    background: #0c0c0c;
+}
+
+
+.media-reference span {
+    display: block;
+
+    margin-bottom: 7px;
+
+    color: #555;
+
+    font:
+        9px
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.16em;
+}
+
+
+.media-reference strong {
+    color: #ddd;
+
+    font-size: 12px;
+
+    letter-spacing: 0.12em;
+}
+
+
+/* =========================================================
+   SHOWCASE SECTION
+========================================================= */
+
+.media-section {
+    padding: 55px 0 120px;
+}
+
+
+/* =========================================================
+   TOOLBAR
+========================================================= */
+
+.media-toolbar {
+    display: flex;
+
+    align-items: center;
+
+    justify-content: space-between;
+
+    gap: 25px;
+
+    margin-bottom: 32px;
+
+    padding-bottom: 18px;
+
+    border-bottom: 1px solid var(--line);
+}
+
+
+.media-toolbar-label {
+    color: #555;
+
+    font:
+        9px
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.16em;
+}
+
+
+.media-filters {
+    display: flex;
+
+    flex-wrap: wrap;
+
+    gap: 6px;
+}
+
+
+.media-filter {
+    appearance: none;
+
+    padding: 7px 11px;
+
+    border: 1px solid #252525;
+
+    background: transparent;
+
+    color: #666;
+
+    font:
+        9px
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.1em;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.media-filter:hover {
+    color: #ccc;
+
+    border-color: #444;
+}
+
+
+.media-filter.active {
+    color: #eee;
+
+    background: #171717;
+
+    border-color: #555;
+}
+
+
+/* =========================================================
+   MASONRY SHOWCASE
+========================================================= */
+
+.media-gallery {
+
+    column-count: 3;
+
+    column-gap: 14px;
+
+}
+
+
+/*
+ * Masonry is intentional here.
+ *
+ * Images retain their natural proportions,
+ * meaning there are NO uniform square cards.
+ */
+
+.showcase-item {
+
+    display: inline-block;
+
+    width: 100%;
+
+    margin: 0 0 14px;
+
+    break-inside: avoid;
+
+    position: relative;
+
+    overflow: hidden;
+
+    background: #090909;
+}
+
+
+.showcase-image {
+
+    position: relative;
+
+    display: block;
+
+    width: 100%;
+
+    padding: 0;
+
+    border: 0;
+
+    background: transparent;
+
+    cursor: zoom-in;
+
+    overflow: hidden;
+}
+
+
+.showcase-image img {
+
+    display: block;
+
+    width: 100%;
+
+    height: auto;
+
+    object-fit: cover;
+
+    transition:
+        transform 0.7s cubic-bezier(.2,.7,.2,1),
+        filter 0.45s ease;
+
+}
+
+
+.showcase-item:hover img {
+
+    transform: scale(1.025);
+
+    filter: brightness(0.72);
+}
+
+
+/* =========================================================
+   EDITORIAL SIZE VARIATIONS
+========================================================= */
+
+.showcase-item.feature {
+
+    margin-bottom: 18px;
+
+}
+
+
+.showcase-item.feature img {
+
+    min-height: 480px;
+
+    object-fit: cover;
+
+}
+
+
+.showcase-item.large img {
+
+    min-height: 390px;
+
+    object-fit: cover;
+
+}
+
+
+.showcase-item.tall img {
+
+    min-height: 430px;
+
+    object-fit: cover;
+
+}
+
+
+/* =========================================================
+   IMAGE OVERLAY
+========================================================= */
+
+.showcase-overlay {
+
+    position: absolute;
+
+    inset: 0;
+
+    display: flex;
+
+    flex-direction: column;
+
+    justify-content: space-between;
+
+    padding: 17px;
+
+    background:
+        linear-gradient(
+            to bottom,
+            rgba(0,0,0,.52),
+            transparent 35%,
+            transparent 55%,
+            rgba(0,0,0,.78)
+        );
+
+    opacity: 0;
+
+    transition:
+        opacity 0.3s ease;
+}
+
+
+.showcase-item:hover
+.showcase-overlay {
+
+    opacity: 1;
+
+}
+
+
+.showcase-overlay-top {
+
+    display: flex;
+
+    justify-content: space-between;
+
+    color: #ddd;
+
+    font:
+        8px
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.13em;
+}
+
+
+.showcase-overlay-bottom {
+
+    display: flex;
+
+    flex-direction: column;
+
+    gap: 5px;
+}
+
+
+.showcase-overlay-bottom strong {
+
+    color: #fff;
+
+    font-size: 12px;
+
+    letter-spacing: 0.1em;
+}
+
+
+.showcase-overlay-bottom span {
+
+    color: #aaa;
+
+    font:
+        8px
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.13em;
+}
+
+
+/* =========================================================
+   EMPTY
+========================================================= */
+
+.media-empty {
+
+    width: 100%;
+
+    padding: 100px 20px;
+
+    border: 1px solid #292929;
+
+    text-align: center;
+
+    color: #555;
+
+    font:
+        10px
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.15em;
+}
+
+
+/* =========================================================
+   FULLSCREEN LIGHTBOX
+========================================================= */
+
+.media-lightbox {
+
+    position: fixed;
+
+    inset: 0;
+
+    z-index: 9999;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    padding: 25px;
+
+    background:
+        rgba(0, 0, 0, 0.97);
+
+    opacity: 0;
+
+    visibility: hidden;
+
+    pointer-events: none;
+
+    transition:
+        opacity 0.25s ease,
+        visibility 0.25s ease;
+}
+
+
+.media-lightbox.open {
+
+    opacity: 1;
+
+    visibility: visible;
+
+    pointer-events: auto;
+
+}
+
+
+/* =========================================================
+   LIGHTBOX IMAGE AREA
+========================================================= */
+
+.lightbox-inner {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+}
+
+
+.lightbox-image-wrap {
+
+    position: relative;
+
+    width: 100%;
+
+    height: 100%;
+
+    display: flex;
+
+    align-items: center;
+
+    justify-content: center;
+
+    overflow: hidden;
+}
+
+
+.lightbox-image-wrap img {
+
+    display: block;
+
+    max-width: 92vw;
+
+    max-height: 88vh;
+
+    width: auto;
+
+    height: auto;
+
+    object-fit: contain;
+
+    user-select: none;
+
+    cursor: grab;
+
+    transform-origin: center center;
+
+    transition:
+        transform 0.2s ease;
+
+}
+
+
+.lightbox-image-wrap img.dragging {
+
+    cursor: grabbing;
+
+    transition: none;
+
+}
+
+
+/* =========================================================
+   LIGHTBOX INFORMATION
+========================================================= */
+
+.lightbox-info {
+
+    position: fixed;
+
+    left: 30px;
+
+    bottom: 28px;
+
+    z-index: 10001;
+
+    max-width: 420px;
+
+    padding: 14px 17px;
+
+    border-left: 2px solid #777;
+
+    background:
+        rgba(5,5,5,.86);
+
+    backdrop-filter: blur(8px);
+}
+
+
+.lightbox-meta {
+
+    margin-bottom: 6px;
+
+    color: #777;
+
+    font:
+        8px
+        "Courier New",
+        monospace;
+
+    letter-spacing: 0.15em;
+}
+
+
+.lightbox-title {
+
+    color: #eee;
+
+    font-size: 14px;
+
+    letter-spacing: 0.1em;
+}
+
+
+.lightbox-description {
+
+    margin: 7px 0 0;
+
+    color: #888;
+
+    font-size: 11px;
+
+    line-height: 1.55;
+}
+
+
+/* =========================================================
+   CLOSE
+========================================================= */
+
+.lightbox-close {
+
+    position: fixed;
+
+    top: 22px;
+
+    right: 24px;
+
+    z-index: 10002;
+
+    width: 44px;
+
+    height: 44px;
+
+    padding: 0;
+
+    border: 1px solid #444;
+
+    background: rgba(10,10,10,.8);
+
+    color: #ddd;
+
+    font-size: 25px;
+
+    line-height: 1;
+
+    cursor: pointer;
+
+    transition:
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.lightbox-close:hover {
+
+    background: #1b1b1b;
+
+    border-color: #777;
+
+}
+
+
+/* =========================================================
+   ZOOM CONTROLS
+========================================================= */
+
+.lightbox-controls {
+
+    position: fixed;
+
+    right: 25px;
+
+    bottom: 25px;
+
+    z-index: 10002;
+
+    display: flex;
+
+    gap: 5px;
+}
+
+
+.lightbox-control {
+
+    width: 38px;
+
+    height: 38px;
+
+    border: 1px solid #383838;
+
+    background: rgba(10,10,10,.85);
+
+    color: #bbb;
+
+    font-size: 15px;
+
+    cursor: pointer;
+
+    transition:
+        color 0.2s ease,
+        background 0.2s ease,
+        border-color 0.2s ease;
+}
+
+
+.lightbox-control:hover {
+
+    color: #fff;
+
+    background: #1a1a1a;
+
+    border-color: #666;
+
+}
+
+
+/* =========================================================
+   TABLET
+========================================================= */
+
+@media (max-width: 1000px) {
+
+    .media-gallery {
+
+        column-count: 2;
+
+    }
+
+}
+
+
+/* =========================================================
+   MOBILE
+========================================================= */
+
+@media (max-width: 700px) {
+
+    .media-hero {
+
+        padding: 65px 0 55px;
+
+    }
+
+
+    .media-hero-grid {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .media-reference {
+
+        width: 100%;
+
+    }
+
+
+    .media-section {
+
+        padding: 45px 0 75px;
+
+    }
+
+
+    .media-toolbar {
+
+        align-items: flex-start;
+
+        flex-direction: column;
+
+    }
+
+
+    .media-filters {
+
+        width: 100%;
+
+    }
+
+
+    .media-filter {
+
+        flex: 1;
+
+    }
+
+
+    .media-gallery {
+
+        column-count: 1;
+
+    }
+
+
+    .showcase-item.feature img,
+    .showcase-item.large img,
+    .showcase-item.tall img {
+
+        min-height: 0;
+
+    }
+
+
+    .showcase-overlay {
+
+        opacity: 1;
+
+    }
+
+
+    .media-lightbox {
+
+        padding: 5px;
+
+    }
+
+
+    .lightbox-image-wrap img {
+
+        max-width: 98vw;
+
+        max-height: 84vh;
+
+    }
+
+
+    .lightbox-info {
+
+        left: 12px;
+
+        right: 12px;
+
+        bottom: 12px;
+
+        max-width: none;
+
+    }
+
+
+    .lightbox-controls {
+
+        right: 12px;
+
+        top: 12px;
+
+        bottom: auto;
+
+    }
+
+
+    .lightbox-close {
+
+        top: 60px;
+
+        right: 12px;
+
+    }
+
+}

@@ -1178,81 +1178,86 @@
 
 .configuration-grid {
     display: grid;
-
-    grid-template-columns:
-        repeat(3, minmax(0, 1fr));
-
-    gap: 2px;
-
-    background: #292929;
-
-    border: 1px solid #292929;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
 }
-
 
 .configuration-card {
+    display: grid;
+    grid-template-columns: minmax(120px, 34%) minmax(0, 1fr);
+    min-width: 0;
     overflow: hidden;
-
     background: #0e0e0e;
+    border: 1px solid #353535;
 }
 
+.configuration-image-wrap {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 210px;
+    background: #090909;
+    border-right: 1px solid #292929;
+}
 
 .configuration-image {
     display: block;
-
     width: 100%;
-
-    height: 190px;
-
+    max-height: 220px;
     object-fit: contain;
-
-    padding: 20px;
-
-    background: #090909;
-
-    filter: none;
-
+    padding: 12px;
     opacity: 1;
-
-    border-bottom: 1px solid #292929;
-
-    transition:
-        opacity .25s ease;
 }
-
-
-.configuration-card:hover
-.configuration-image {
-    opacity: .92;
-}
-
 
 .configuration-content {
-    padding: 15px;
+    min-width: 0;
+    padding: 18px;
 }
 
-
-.configuration-content strong {
+.configuration-content small {
     display: block;
+    margin-bottom: 9px;
+    color: #c0a16a;
+    font: 10px "Courier New", monospace;
+    letter-spacing: .1em;
+}
 
-    margin-bottom: 6px;
+.configuration-content h3 {
+    margin: 0 0 12px;
+    color: #f0f0f0;
+    font-size: 16px;
+    line-height: 1.35;
+    letter-spacing: .025em;
+}
 
+.configuration-content p {
+    margin: 0;
+    color: #c4c4c4;
+    font-size: 14px;
+    line-height: 1.7;
+    overflow-wrap: anywhere;
+}
+
+.configuration-note {
+    margin-top: 16px;
+    padding: 11px 12px;
+    background: #151515;
+    border-left: 2px solid #777;
+}
+
+.configuration-note strong {
+    display: block;
+    margin-bottom: 5px;
+    color: #dedede;
+    font: 10px "Courier New", monospace;
+    letter-spacing: .08em;
+}
+
+.configuration-note span {
+    display: block;
     color: #aaa;
-
-    font-size: 10px;
-
-    letter-spacing: .05em;
-}
-
-
-.configuration-content span {
-    display: block;
-
-    color: #666;
-
-    font-size: 9px;
-
-    line-height: 1.6;
+    font-size: 12px;
+    line-height: 1.55;
 }
 
 
@@ -1362,6 +1367,28 @@
         grid-template-columns: 1fr;
     }
 
+    .configuration-card {
+        grid-template-columns: 1fr;
+    }
+
+    .configuration-image-wrap {
+        min-height: 150px;
+        border-right: 0;
+        border-bottom: 1px solid #292929;
+    }
+
+    .configuration-image {
+        max-height: 170px;
+    }
+
+    .configuration-content {
+        padding: 18px;
+    }
+
+    .configuration-content p {
+        font-size: 14px;
+    }
+
 
     .product-intro-content {
         padding: 35px 25px;
@@ -1434,3 +1461,114 @@
     }
 
 }
+
+/* =========================================================
+   ARMOURY REVISION — TYPE-FIRST CATALOGUE
+========================================================= */
+.armoury-filter-panel{display:grid;gap:12px;padding-bottom:20px}
+#weaponTypeFilters{display:flex;flex-wrap:wrap;overflow:visible;border:1px solid #292929}
+#weaponTypeFilters .role-tab{border-bottom:1px solid #242424;white-space:nowrap}
+.armoury-select-filters{display:flex;flex-wrap:wrap;gap:12px}
+.armoury-select-filters label{display:flex;align-items:center;gap:10px;color:#666;font:8px "Courier New",monospace;letter-spacing:.12em}
+.armoury-select-filters select{min-width:190px;max-width:100%;padding:12px 34px 12px 12px;border:1px solid #303030;border-radius:0;background:#0d0d0d;color:#bbb;font:10px "Courier New",monospace;letter-spacing:.04em}
+.weapon-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:12px}
+.weapon-tags span{padding:4px 6px;border:1px solid #292929;color:#777;font:7px "Courier New",monospace;letter-spacing:.04em;text-transform:uppercase}
+.equipment-card:focus-visible{outline:1px solid #aaa;outline-offset:-2px}
+.configuration-content small{display:block;margin-bottom:8px;color:#555;font:7px "Courier New",monospace;letter-spacing:.12em}
+.product-status{max-width:100%;line-height:1.5}
+@media(max-width:700px){.armoury-select-filters{display:grid;grid-template-columns:1fr}.armoury-select-filters label{align-items:flex-start;flex-direction:column;gap:7px}.armoury-select-filters select{width:100%}#weaponTypeFilters .role-tab{padding:12px 10px}}
+
+
+/* =========================================================
+   CLARIFIED POLICY + EDITABLE CONFIGURATION GUIDES
+========================================================= */
+.armoury-policy{display:grid;grid-template-columns:170px minmax(0,1fr) 125px;gap:22px;align-items:center;margin-top:24px;margin-bottom:8px;padding:22px 24px;background:#111;border:1px solid #62533b;border-left:4px solid #c0a16a}
+.policy-mark{font:10px "Courier New",monospace;letter-spacing:.12em;color:#c0a16a;line-height:1.7}
+.policy-copy strong{display:block;color:#f2f2f2;font:12px "Courier New",monospace;letter-spacing:.08em}
+.policy-copy p{margin:8px 0 0;color:#c5c5c5;font-size:13px;line-height:1.65}
+.policy-count{border-left:1px solid #393939;padding-left:20px;text-align:center}
+.policy-count strong{display:block;font-size:34px;line-height:1;color:#c0a16a}
+.policy-count span{display:block;margin-top:8px;font:9px/1.6 "Courier New",monospace;color:#aaa;letter-spacing:.07em}
+.card-config-callout{display:flex;flex-direction:column;gap:5px;margin-top:15px;padding:10px 11px;background:#17150f;border:1px solid #4a3e2b;border-left:3px solid #c0a16a}
+.card-config-callout strong{font:10px "Courier New",monospace;letter-spacing:.08em;color:#d7b77d}
+.card-config-callout span{font-size:11px;line-height:1.45;color:#d1d1d1}
+.product-configurations{background:#0b0b0b}
+.product-configurations .detail-section-heading{margin-bottom:18px}
+.product-configurations .detail-section-heading span{color:#e5c58c}
+.product-configurations .detail-section-heading small{color:#c0a16a}
+.configuration-grid{gap:16px}
+.configuration-card{grid-template-columns:minmax(110px,28%) minmax(0,1fr);align-items:stretch;border-color:#4b4030;background:#101010}
+.configuration-image-wrap{min-height:240px}
+.configuration-content{padding:20px}
+.config-label-row{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.config-label-row small{margin:0;color:#e1bd7a;font-size:10px;letter-spacing:.1em}
+.config-label-row>span{font:9px "Courier New",monospace;color:#b8b8b8;border:1px solid #454545;padding:4px 6px}
+.component-list-heading{margin-top:18px;padding-bottom:8px;border-bottom:1px solid #39332a;font:10px "Courier New",monospace;letter-spacing:.12em;color:#d7b77d}
+.component-list{display:flex;flex-direction:column}
+.component-row{display:grid;grid-template-columns:minmax(82px,105px) minmax(0,1fr);gap:12px;padding:11px 0;border-bottom:1px solid #292929}
+.component-slot{font:10px "Courier New",monospace;letter-spacing:.03em;color:#aaa;text-transform:uppercase;padding-top:2px}
+.component-detail strong{display:block;color:#e5e5e5;font-size:12px;font-weight:500;line-height:1.5;overflow-wrap:anywhere}
+.component-detail small{display:block;margin-top:4px;color:#888;font:9px "Courier New",monospace;letter-spacing:.06em}
+.configuration-note{border-left-color:#c0a16a;background:#17150f}
+.configuration-note strong{color:#e5c58c}
+.configuration-note ul{margin:0;padding-left:17px;color:#c2c2c2;font-size:11px;line-height:1.6}
+.configuration-note li+li{margin-top:5px}
+@media(max-width:950px){.armoury-policy{grid-template-columns:1fr;gap:10px}.policy-count{display:flex;align-items:center;gap:12px;border-left:0;border-top:1px solid #393939;padding:12px 0 0;text-align:left}.policy-count strong{font-size:25px}.policy-count span{margin:0}.configuration-card{grid-template-columns:1fr}.configuration-image-wrap{min-height:150px;border-right:0;border-bottom:1px solid #292929}.configuration-image{max-height:180px}}
+@media(max-width:600px){.armoury-policy{padding:18px}.configuration-content{padding:15px}.component-row{grid-template-columns:85px minmax(0,1fr);gap:8px}.component-detail strong{font-size:12px}}
+
+/* =========================================================
+   CONFIGURATION PREVIEW → EXPANDABLE BUILD DETAILS
+   Each recommended setup is visible as a landscape preview.
+========================================================= */
+.configuration-grid{display:grid;grid-template-columns:1fr;gap:14px}
+.configuration-card{display:block;min-width:0;overflow:hidden;border:1px solid #4b4030;background:#101010}
+.configuration-card.is-expanded{border-color:#b99a62}
+.configuration-preview{display:grid;grid-template-columns:minmax(260px,42%) minmax(0,1fr);width:100%;padding:0;border:0;background:#101010;color:inherit;text-align:left;cursor:pointer}
+.configuration-preview:hover{background:#15130f}
+.configuration-preview:focus-visible{outline:2px solid #d7b77d;outline-offset:-3px}
+.configuration-image-wrap{display:flex;align-items:center;justify-content:center;min-width:0;min-height:0;aspect-ratio:16/9;overflow:hidden;background:#080808;border:0;border-right:1px solid #30291e}
+.configuration-image{display:block;width:100%;height:100%;max-height:none;object-fit:contain;padding:18px;opacity:1}
+.configuration-preview-copy{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:12px;min-width:0;padding:24px}
+.configuration-preview .config-label-row{width:100%;margin:0}
+.configuration-preview-title{display:block;color:#f3f0e9;font-size:clamp(18px,2vw,25px);line-height:1.25;font-weight:650;letter-spacing:.015em}
+.configuration-preview-description{display:block;color:#c7c3bb;font-size:14px;line-height:1.7;overflow-wrap:anywhere}
+.configuration-open-hint{display:flex;align-items:center;gap:12px;margin-top:3px;color:#e0bd7d;font:10px "Courier New",monospace;letter-spacing:.1em}
+.configuration-open-arrow{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border:1px solid #6a5637;color:#f0d29a;font-size:16px;transition:transform .18s ease,background .18s ease}
+.configuration-preview:hover .configuration-open-arrow{background:#302617;transform:translateY(2px)}
+.configuration-preview[aria-expanded="true"] .configuration-open-arrow{transform:rotate(180deg)}
+.configuration-details{padding:0 24px 24px;border-top:1px solid #332b20;background:#0c0c0c}
+.configuration-details[hidden]{display:none}
+.configuration-detail-heading{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;padding-top:20px;color:#e0bd7d;font:10px "Courier New",monospace;letter-spacing:.1em}
+.configuration-detail-heading small{color:#999;font-size:9px;letter-spacing:.06em}
+.configuration-details .component-list-heading{margin-top:14px}
+.configuration-details .component-list{max-width:900px}
+.configuration-details .component-row{grid-template-columns:minmax(110px,150px) minmax(0,1fr)}
+.configuration-note{margin-top:18px}
+@media(max-width:700px){.configuration-preview{grid-template-columns:1fr}.configuration-image-wrap{aspect-ratio:16/9;border-right:0;border-bottom:1px solid #30291e}.configuration-image{padding:12px}.configuration-preview-copy{padding:18px}.configuration-preview-title{font-size:20px}.configuration-preview-description{font-size:13px}.configuration-details{padding:0 18px 18px}.configuration-details .component-row{grid-template-columns:90px minmax(0,1fr)}}
+
+
+/* =========================================================
+   MODAL 360° IMAGE VIEWER
+   Uses ordered image frames supplied in each ARMOURY_DATA item.
+   ========================================================= */
+.product-image-background{display:block;position:relative;overflow:hidden}
+.modal-360-viewer{position:relative;display:flex;align-items:center;justify-content:center;width:100%;min-height:inherit;height:100%;max-height:480px;outline:none;touch-action:pan-y;user-select:none;-webkit-user-select:none;cursor:grab}
+.modal-360-viewer.is-dragging{cursor:grabbing}
+.modal-360-viewer:focus-visible{outline:1px solid #8d8d8d;outline-offset:-5px}
+.modal-360-viewer .product-main-image{height:100%;max-height:480px;pointer-events:none;object-fit:contain;touch-action:pan-y}
+.viewer-frame-status{position:absolute;top:15px;left:16px;padding:6px 8px;border:1px solid #383838;background:rgba(8,8,8,.82);color:#777;font:8px "Courier New",monospace;letter-spacing:.1em;pointer-events:none}
+.viewer-frame-status.is-active{border-color:#62533b;color:#d0b27a}
+.viewer-controls{position:absolute;left:50%;bottom:18px;display:flex;align-items:center;gap:14px;transform:translateX(-50%);padding:6px 8px;border:1px solid #343434;background:rgba(8,8,8,.88)}
+.viewer-controls button{width:30px;height:28px;border:1px solid #383838;background:#111;color:#ccc;font-size:16px;cursor:pointer}
+.viewer-controls button:hover:not(:disabled){border-color:#8b744f;color:#fff}
+.viewer-controls button:disabled{opacity:.3;cursor:not-allowed}
+.viewer-controls span{min-width:82px;text-align:center;color:#aaa;font:8px "Courier New",monospace;letter-spacing:.1em}
+.viewer-drag-hint{position:absolute;right:16px;bottom:27px;color:#777;font:7px "Courier New",monospace;letter-spacing:.08em;pointer-events:none}
+@media(max-width:950px){.modal-360-viewer{max-height:390px}.modal-360-viewer .product-main-image{max-height:390px}}
+@media(max-width:600px){.modal-360-viewer{max-height:290px}.modal-360-viewer .product-main-image{max-height:290px}.viewer-frame-status{top:10px;left:10px;font-size:7px}.viewer-controls{bottom:10px;gap:9px}.viewer-drag-hint{right:10px;bottom:20px;font-size:6px}}
+
+
+/* FORCE ELIGIBILITY — SAS / SEAL / 160TH SOAR */
+.force-tags{display:flex;flex-wrap:wrap;gap:5px;margin-top:8px}
+.force-tags span{padding:5px 7px;border:1px solid #62533b;background:#17140f;color:#d7bd8e;font:8px "Courier New",monospace;letter-spacing:.07em;text-transform:uppercase}
+.force-tags span:last-child{border-color:#3c4b57}
