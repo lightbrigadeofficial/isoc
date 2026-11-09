@@ -1,0 +1,55 @@
+{
+            "slot": "Optic System",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Muzzle",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Muzzle Device",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Flashlight",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Laser Module",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Barrel",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Foregrip/Underbarrel",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Magazine",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Grip",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Stock",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Miscellaneous",
+            "suggestion": "#",
+            "required": true
+          }

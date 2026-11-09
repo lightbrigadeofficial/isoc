@@ -51,62 +51,62 @@ const ARMOURY_DATA = [
     "configs": [
       {
         "name": "01 / GENERAL PURPOSE",
-        "image": "guns/m4a1/2.jpg",
+        "image": "guns/m4a1/2.png",
         "description": "Suggested direction: versatile optic, standard magazine and a balanced handling setup. Select only attachments available on this weapon in BRM5.",
         "components": [
-                   {
+          {
             "slot": "Optic System",
-            "suggestion": "#",
+            "suggestion": "SCEPTER DM 1-4X",
             "required": true
           },
           {
             "slot": "Muzzle",
-            "suggestion": "#",
+            "suggestion": "FH556RC",
             "required": true
           },
           {
             "slot": "Muzzle Device",
-            "suggestion": "#",
+            "suggestion": "SOCOM556-MINI2",
             "required": true
           },
           {
             "slot": "Flashlight",
-            "suggestion": "#",
-            "required": true
+            "suggestion": "NONE",
+            "required": false
           },
           {
             "slot": "Laser Module",
-            "suggestion": "#",
+            "suggestion": "LA-23/PEQ",
             "required": true
           },
           {
             "slot": "Barrel",
-            "suggestion": "#",
+            "suggestion": "SOCOM 14.5\"",
             "required": true
           },
           {
             "slot": "Foregrip/Underbarrel",
-            "suggestion": "#",
-            "required": true
+            "suggestion": "NONE",
+            "required": false
           },
           {
             "slot": "Magazine",
-            "suggestion": "#",
+            "suggestion": "CMAG 30 AR/M4 Gen C3 Window",
             "required": true
           },
           {
             "slot": "Grip",
-            "suggestion": "#",
+            "suggestion": "CUF",
             "required": true
           },
           {
             "slot": "Stock",
-            "suggestion": "#",
+            "suggestion": "SOPMOD Buttstock Assembly",
             "required": true
           },
           {
             "slot": "Miscellaneous",
-            "suggestion": "#",
+            "suggestion": "KV-5P C (Switch), Ribbed Panel 16-slot",
             "required": true
           }
         ],
@@ -192,7 +192,7 @@ const ARMOURY_DATA = [
     "id": "ISOC-ARM-002",
     "name": "Colt M16A4",
     "type": "Assault Rifle",
-    "image": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22%230b0b0b%22/%3E%3Cpath%20d%3D%22M80%2080H880M80%20460H880%22%20stroke%3D%22%23333%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2280%22%20y%3D%22230%22%20fill%3D%22%23777%22%20font-family%3D%22monospace%22%20font-size%3D%2222%22%20letter-spacing%3D%225%22%3EISOC%20//%20ARMOURY%3C/text%3E%3Ctext%20x%3D%2280%22%20y%3D%22290%22%20fill%3D%22%23ddd%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2234%22%3EColt%20M16A4%3C/text%3E%3Ctext%20x%3D%2280%22%20y%3D%22345%22%20fill%3D%22%23666%22%20font-family%3D%22monospace%22%20font-size%3D%2216%22%20letter-spacing%3D%223%22%3EIMAGE%20PENDING%3C/text%3E%3C/svg%3E",
+    "image": "guns/m16a4/1.jpg",
     "description": "A rifle option listed for the SEAL element and available to 160th SOAR pilots.",
     "roles": [
       "Rifleman",
@@ -214,10 +214,66 @@ const ARMOURY_DATA = [
     },
     "configs": [
       {
-        "name": "01 / RECOMMENDED BUILD",
-        "image": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22%230b0b0b%22/%3E%3Cpath%20d%3D%22M80%2080H880M80%20460H880%22%20stroke%3D%22%23333%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2280%22%20y%3D%22230%22%20fill%3D%22%23777%22%20font-family%3D%22monospace%22%20font-size%3D%2222%22%20letter-spacing%3D%225%22%3EISOC%20//%20ARMOURY%3C/text%3E%3Ctext%20x%3D%2280%22%20y%3D%22290%22%20fill%3D%22%23ddd%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2234%22%3EColt%20M16A4%3C/text%3E%3Ctext%20x%3D%2280%22%20y%3D%22345%22%20fill%3D%22%23666%22%20font-family%3D%22monospace%22%20font-size%3D%2216%22%20letter-spacing%3D%223%22%3EIMAGE%20PENDING%3C/text%3E%3C/svg%3E",
+        "name": "01 / GENERAL PURPOSE",
+        "image": "guns/m16a4/2.png",
         "description": "Build recommendation to be completed for the in-game catalogue.",
-        "components": [],
+        "components": [
+          {
+            "slot": "Optic System",
+            "suggestion": "Velio 8T + G45",
+            "required": true
+          },
+          {
+            "slot": "Muzzle",
+            "suggestion": "249F",
+            "required": true
+          },
+          {
+            "slot": "Muzzle Device",
+            "suggestion": "NONE",
+            "required": false
+          },
+          {
+            "slot": "Flashlight",
+            "suggestion": "MX-12393B/PVS",
+            "required": true
+          },
+          {
+            "slot": "Laser Module",
+            "suggestion": "LA-5B/PEQ",
+            "required": true
+          },
+          {
+            "slot": "Barrel",
+            "suggestion": "Government 20\" + M4A1 RIS-II",
+            "required": true
+          },
+          {
+            "slot": "Foregrip/Underbarrel",
+            "suggestion": "M4 Carrying Handle + Sturmgriff",
+            "required": true
+          },
+          {
+            "slot": "Magazine",
+            "suggestion": "Maritime",
+            "required": true
+          },
+          {
+            "slot": "Grip",
+            "suggestion": "M16A2 Pistol Grip",
+            "required": true
+          },
+          {
+            "slot": "Stock",
+            "suggestion": "M16A2 Fixed Buttstock Assembly",
+            "required": true
+          },
+          {
+            "slot": "Miscellaneous",
+            "suggestion": "KM10V8 (Bipod)",
+            "required": true
+          }
+        ],
         "notes": [
           "This entry is part of the proposed weapon register. Add verified BRM5-compatible components when the build is finalized."
         ]
@@ -226,7 +282,63 @@ const ARMOURY_DATA = [
         "name": "02 / ALTERNATIVE BUILD",
         "image": "data:image/svg+xml;charset=UTF-8,%3Csvg%20xmlns%3D%22http%3A//www.w3.org/2000/svg%22%20width%3D%22960%22%20height%3D%22540%22%20viewBox%3D%220%200%20960%20540%22%3E%3Crect%20width%3D%22960%22%20height%3D%22540%22%20fill%3D%22%230b0b0b%22/%3E%3Cpath%20d%3D%22M80%2080H880M80%20460H880%22%20stroke%3D%22%23333%22%20stroke-width%3D%222%22/%3E%3Ctext%20x%3D%2280%22%20y%3D%22230%22%20fill%3D%22%23777%22%20font-family%3D%22monospace%22%20font-size%3D%2222%22%20letter-spacing%3D%225%22%3EISOC%20//%20ARMOURY%3C/text%3E%3Ctext%20x%3D%2280%22%20y%3D%22290%22%20fill%3D%22%23ddd%22%20font-family%3D%22Arial%2Csans-serif%22%20font-size%3D%2234%22%3EColt%20M16A4%3C/text%3E%3Ctext%20x%3D%2280%22%20y%3D%22345%22%20fill%3D%22%23666%22%20font-family%3D%22monospace%22%20font-size%3D%2216%22%20letter-spacing%3D%223%22%3EIMAGE%20PENDING%3C/text%3E%3C/svg%3E",
         "description": "Alternative build recommendation to be completed for the in-game catalogue.",
-        "components": [],
+        "components": [
+          {
+            "slot": "Optic System",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Muzzle",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Muzzle Device",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Flashlight",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Laser Module",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Barrel",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Foregrip/Underbarrel",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Magazine",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Grip",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Stock",
+            "suggestion": "#",
+            "required": true
+          },
+          {
+            "slot": "Miscellaneous",
+            "suggestion": "#",
+            "required": true
+          }
+        ],
         "notes": [
           "This entry is part of the proposed weapon register. Add verified BRM5-compatible components when the build is finalized."
         ]
@@ -237,7 +349,7 @@ const ARMOURY_DATA = [
     "id": "ISOC-ARM-003",
     "name": "Steyr Armee-Universal-Gewehr",
     "type": "Assault Rifle",
-    "image": "AUG.png",
+    "image": "guns/aug/1.jpg",
     "description": "The Steyr AUG platform, listed for SAS and SEAL personnel. Also available to 160th SOAR pilots.",
     "roles": [
       "Rifleman",
@@ -263,32 +375,62 @@ const ARMOURY_DATA = [
     "configs": [
       {
         "name": "01 / GENERAL PURPOSE",
-        "image": "AUG.png",
+        "image": "guns/aug/2.png",
         "description": "Suggested direction: versatile optic, standard magazine and a balanced handling setup. Select only attachments available on this weapon in BRM5.",
         "components": [
           {
-            "slot": "Optic",
-            "suggestion": "General-purpose optic with a versatile sight picture",
-            "required": true
-          },
-          {
-            "slot": "Magazine",
-            "suggestion": "Standard-capacity magazine; prioritize handling and reliability",
+            "slot": "Optic System",
+            "suggestion": "HWS 552 + G45",
             "required": true
           },
           {
             "slot": "Muzzle",
-            "suggestion": "Optional suppressor or flash-hiding attachment, if available",
-            "required": false
+            "suggestion": "FL3P-556-M13X1",
+            "required": true
           },
           {
-            "slot": "Underbarrel / Grip",
-            "suggestion": "Optional compatible grip; omit if unavailable or unnecessary",
+            "slot": "Muzzle Device",
+            "suggestion": "SOCOM556-MINI2",
+            "required": true
+          },
+          {
+            "slot": "Flashlight",
+            "suggestion": "M640U",
+            "required": true
+          },
+          {
+            "slot": "Laser Module",
+            "suggestion": "LA-23/PEQ",
+            "required": true
+          },
+          {
+            "slot": "Barrel",
+            "suggestion": "Standard 16.4\" + CQC",
+            "required": true
+          },
+          {
+            "slot": "Foregrip/Underbarrel",
+            "suggestion": "BGV-Mk46",
+            "required": true
+          },
+          {
+            "slot": "Magazine",
+            "suggestion": "CMAG 30 AR/M4 Gen C3 (Mag Assist)",
+            "required": true
+          },
+          {
+            "slot": "Grip",
+            "suggestion": "NONE",
             "required": false
           },
           {
             "slot": "Stock",
-            "suggestion": "Keep standard stock or choose a compatible handling-focused option",
+            "suggestion": "NONE",
+            "required": false
+          },
+          {
+            "slot": "Miscellaneous",
+            "suggestion": "NONE",
             "required": false
           }
         ],
