@@ -1,1307 +1,377 @@
-/* =========================================================
-   KSOL PERSONNEL REGISTER
-   ROSTER-SPECIFIC STYLES
-   ========================================================= */
-
-.roster-container {
-    width: min(1160px, calc(100% - 36px));
-    margin-inline: auto;
-}
-
+:root{--bg:#101113;--panel:#17191c;--panel2:#1c1f22;--line:#303438;--line2:#454b50;--text:#e7e8e8;--muted:#92999e;--dim:#626a70;--accent:#c1c7ca;--green:#9eae9e;--amber:#c2aa7c;--red:#c28b83;font-family:Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;color:var(--text);background:var(--bg)}*{box-sizing:border-box}body{margin:0;min-width:320px;background:radial-gradient(ellipse at 50% -20%,#25292d 0,transparent 45%),var(--bg);color:var(--text)}button,input,select,textarea{font:inherit}.topline{height:3px;background:#aeb5b8}.site-header{height:66px;border-bottom:1px solid #2b2e31;display:flex;align-items:center;justify-content:space-between;padding:0 max(24px,calc((100% - 1440px)/2));background:#111315}.brand{display:flex;align-items:center;gap:11px;text-decoration:none;color:var(--text);font-size:13px;font-weight:800;letter-spacing:.12em}.brand small{display:block;color:var(--muted);font-size:8px;letter-spacing:.18em;margin-top:3px}.brand-mark{width:31px;height:31px;border:1px solid #778087;display:grid;place-items:center;font-family:Georgia,serif;font-size:21px}.header-right{display:flex;gap:22px;align-items:center;font:9px "Courier New",monospace;letter-spacing:.14em;color:var(--muted)}.live-indicator:before{content:"";display:inline-block;width:6px;height:6px;border-radius:50%;background:var(--green);margin-right:8px}.shell{width:min(1440px,calc(100% - 48px));margin:auto}.hero{padding:58px 0 0;border-bottom:1px solid var(--line)}.eyebrow{font:9px "Courier New",monospace;letter-spacing:.18em;color:var(--muted)}.hero-row{display:flex;justify-content:space-between;align-items:flex-start;gap:30px;padding:19px 0 35px}.hero h1{font-size:clamp(38px,5.2vw,68px);line-height:.98;letter-spacing:-.055em;margin:0;font-weight:750}.hero h1 em{font-style:normal;color:#929a9f}.hero p{color:#a4aaae;font-size:13px;margin:17px 0 0}.edition{min-width:150px;border:1px solid var(--line);padding:13px 15px;display:grid;gap:5px;font:8px "Courier New",monospace;letter-spacing:.14em;color:var(--muted)}.edition strong{font-size:12px;color:#d7dadd;letter-spacing:.08em;margin-bottom:5px}.stats{display:grid;grid-template-columns:repeat(4,1fr);border-top:1px solid var(--line)}.stats div{padding:17px 20px 17px 0;border-right:1px solid var(--line);display:flex;align-items:baseline;gap:12px}.stats div+div{padding-left:22px}.stats div:last-child{border:0}.stats b{font:25px "Courier New",monospace;color:#e0e3e4}.stats span{font:8px "Courier New",monospace;letter-spacing:.14em;color:var(--muted)}.controls{display:flex;justify-content:space-between;gap:16px;align-items:center;padding:23px 0 14px}.search{height:40px;display:flex;align-items:center;gap:10px;border:1px solid var(--line2);background:#17191b;padding:0 12px;flex:1;max-width:630px}.search>span{font-size:22px;color:#aeb5b9}.search input{background:transparent;border:0;outline:0;color:var(--text);width:100%;font-size:12px}.search input::placeholder{color:#737b80}.search kbd{font:10px "Courier New",monospace;color:#7d858a;border:1px solid #454b50;padding:2px 6px}.control-buttons{display:flex;gap:7px;flex-wrap:wrap}.button{height:37px;padding:0 13px;background:#191c1f;color:#b9c0c4;border:1px solid #3a4044;font:9px "Courier New",monospace;letter-spacing:.08em;cursor:pointer}.button:hover,.button:focus-visible{border-color:#9da6ab;color:white}.button.primary{background:#d1d5d6;color:#151719;border-color:#d1d5d6;font-weight:700}.map-caption{display:flex;justify-content:space-between;padding:15px 0 10px;color:#7d858a;font:8px "Courier New",monospace;letter-spacing:.15em}.workspace{display:grid;grid-template-columns:minmax(0,1fr) 290px;min-height:540px;border:1px solid var(--line);background:#121416}.map-viewport{overflow:auto;min-width:0;min-height:540px;padding:36px 26px 55px;background-image:radial-gradient(#33383c 0.7px,transparent .7px);background-size:18px 18px}.org-map{min-width:790px;display:flex;flex-direction:column;align-items:center}.org-node{position:relative;width:230px;background:linear-gradient(135deg,#202428,#191c1f);border:1px solid #4a5156;padding:13px 13px;cursor:pointer;transition:border-color .15s,background .15s;box-shadow:0 7px 18px #0003}.org-node:hover{border-color:#a1aaaf}.org-node.selected{border-color:#d4d9dc;background:#252a2e;box-shadow:0 0 0 1px #d4d9dc33,0 7px 18px #0004}.org-node.root-node{width:280px;border-color:#a1aaaf;background:linear-gradient(135deg,#2b3034,#1b1f22)}.node-top{display:flex;align-items:center;gap:11px}.node-symbol{width:32px;height:32px;flex:0 0 32px;border:1px solid #626b71;display:grid;place-items:center;color:#c8ced1;font:10px "Courier New",monospace}.node-copy{min-width:0;flex:1}.node-type{font:7px "Courier New",monospace;letter-spacing:.13em;color:#879198;margin-bottom:5px}.node-title{font-size:12px;font-weight:750;line-height:1.25;color:#e1e4e5}.node-incumbent{font-size:10px;color:#aab2b6;margin-top:5px;line-height:1.3}.node-incumbent.vacant{color:var(--amber)}.node-toggle{width:22px;height:22px;border:1px solid #555e64;background:#252a2e;color:#dce0e2;cursor:pointer;font-size:14px;line-height:1}.node-toggle:hover{background:#394147}.node-count{border-top:1px solid #454c51;margin-top:11px;padding-top:8px;color:#929ba0;font:8px "Courier New",monospace;letter-spacing:.1em}.connector{width:1px;height:28px;background:#626a70;position:relative}.connector:after{content:"";position:absolute;bottom:0;left:-3px;width:7px;height:7px;border-right:1px solid #626a70;border-bottom:1px solid #626a70;transform:rotate(45deg)}.branches{width:100%;display:grid;grid-template-columns:repeat(5,minmax(145px,1fr));gap:13px;align-items:start;position:relative;padding-top:24px}.branches:before{content:"";position:absolute;top:0;left:10%;right:10%;height:1px;background:#555d62}.branch{display:flex;flex-direction:column;align-items:center;min-width:0}.branch-stem{height:24px;width:1px;background:#555d62;position:absolute;top:0}.branch .unit-node{width:100%;min-height:88px}.branch .unit-node .node-title{font-size:13px}.branch .unit-node .node-symbol{width:29px;height:29px;flex-basis:29px}.branch-content{width:100%;display:flex;flex-direction:column;align-items:center}.branch-content>.connector{height:20px}.chain{width:100%;display:flex;flex-direction:column;align-items:center;gap:0}.chain-item{width:100%;display:flex;flex-direction:column;align-items:center}.chain-card{width:100%;position:relative}.chain-item>.chain-children{width:100%;display:flex;flex-direction:column;align-items:center}.chain-children>.chain-item{position:relative;padding-top:19px}.chain-children>.chain-item:before{content:"";position:absolute;top:0;height:19px;width:1px;background:#555d62}.chain-children>.chain-item:after{content:"";position:absolute;top:18px;width:7px;height:7px;border-right:1px solid #555d62;border-bottom:1px solid #555d62;transform:rotate(45deg)}.chain-card .org-node{width:100%}.collapsed>.chain-children{display:none}.unit-members{width:100%;margin-top:12px;border-top:1px dashed #454c51;padding-top:10px}.unit-members-title{font:7px "Courier New",monospace;letter-spacing:.13em;color:#8b9499;margin-bottom:7px}.member-chip{display:flex;justify-content:space-between;gap:7px;padding:7px 8px;border:1px solid #30373b;background:#171a1d;margin-top:5px;font-size:9px;color:#d0d5d7}.member-chip small{color:#899298;font-size:8px}.restricted-note{width:100%;margin-top:15px;padding:12px;border:1px dashed #555d62;color:#9da5a9;font:8px/1.6 "Courier New",monospace;letter-spacing:.06em;text-align:center}.details{border-left:1px solid var(--line);padding:23px 19px;background:#171a1d}.detail-empty{padding-top:42px}.detail-seal{display:grid;place-items:center;width:48px;height:48px;border:1px solid #69737a;color:#c4cbd0;font:12px Georgia,serif;margin-bottom:25px}.detail-empty small{font:8px "Courier New",monospace;letter-spacing:.16em;color:#929ba0}.detail-empty h2{font-size:24px;line-height:1.1;letter-spacing:-.04em;margin:12px 0;color:#dfe2e3}.detail-empty p{font-size:11px;line-height:1.7;color:#929ba0;max-width:220px}.detail-kicker{font:8px "Courier New",monospace;letter-spacing:.15em;color:#929ba0}.detail-title{font-size:23px;line-height:1.1;letter-spacing:-.035em;margin:10px 0 5px}.detail-subtitle{font:9px "Courier New",monospace;letter-spacing:.12em;color:#9aa3a8}.detail-rule{height:1px;background:var(--line2);margin:19px 0}.detail-label{font:8px "Courier New",monospace;letter-spacing:.14em;color:#828c92;margin:17px 0 7px}.detail-value{font-size:12px;line-height:1.5;color:#e1e4e5}.detail-value.vacant{color:var(--amber)}.detail-description{font-size:11px;line-height:1.7;color:#b4bbbf}.detail-person{display:flex;flex-direction:column;gap:3px;padding:8px 0;border-bottom:1px solid #30363a;font-size:10px}.detail-person span{color:#8e989e;font-size:9px}.detail-actions{display:flex;gap:7px;flex-wrap:wrap;margin-top:20px}.detail-actions button,.small-button{background:#252a2e;border:1px solid #4a5359;color:#d6dbde;padding:8px 10px;font:8px "Courier New",monospace;letter-spacing:.08em;cursor:pointer}.personnel-section{padding:48px 0 25px}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:25px;border-bottom:1px solid var(--line);padding-bottom:15px}.section-heading h2{font-size:25px;letter-spacing:-.04em;margin:7px 0 0}.section-heading p{font-size:10px;color:#8f989d;max-width:430px;line-height:1.6;margin:0}.unit-rosters{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;padding-top:14px}.roster-card{border:1px solid var(--line);background:#15181a;padding:14px;min-height:110px}.roster-card-head{display:flex;justify-content:space-between;gap:8px;padding-bottom:10px;border-bottom:1px solid var(--line);font-size:11px}.roster-card-head span{font:8px "Courier New",monospace;color:#929ba0}.roster-person{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid #292e32;font-size:10px}.roster-person:last-child{border:0}.roster-person small{display:block;color:#8c969c;font-size:9px;margin-top:4px}.roster-person em{font:8px "Courier New",monospace;color:var(--green);font-style:normal}.empty-note{font-size:10px;color:#879197;line-height:1.6;padding-top:11px}.page-footer{border-top:1px solid var(--line);padding:16px 0 25px;display:flex;justify-content:space-between;gap:20px;color:#697278;font:8px "Courier New",monospace;letter-spacing:.1em}.modal-backdrop{position:fixed;inset:0;z-index:20;background:#000b;display:grid;place-items:center;padding:20px}.modal-backdrop[hidden]{display:none}.modal{width:min(900px,100%);max-height:min(88vh,850px);overflow:auto;background:#171a1d;border:1px solid #535c62;box-shadow:0 25px 80px #000a}.modal-header{display:flex;justify-content:space-between;align-items:center;padding:19px 22px;border-bottom:1px solid var(--line)}.modal-header h2{margin:5px 0 0;font-size:20px}.close{border:0;background:transparent;color:#d9dddf;font-size:27px;cursor:pointer}.tabs{display:flex;gap:3px;padding:10px 17px;border-bottom:1px solid var(--line);overflow:auto}.tab{border:1px solid transparent;background:transparent;color:#929ba0;padding:10px 13px;font:9px "Courier New",monospace;white-space:nowrap;cursor:pointer}.tab.active{border-color:#535c62;background:#252a2e;color:#eef0f1}.modal-content{padding:17px 22px 24px}.list-toolbar{display:flex;justify-content:space-between;align-items:center;gap:15px;margin-bottom:12px}.list-toolbar p{font-size:10px;color:#939da2;line-height:1.6;margin:0}.add-button{background:#d0d5d7;border:1px solid #d0d5d7;color:#171a1c;padding:10px 13px;font:9px "Courier New",monospace;font-weight:700;cursor:pointer;white-space:nowrap}.record-list{border-top:1px solid var(--line)}.record-row{display:flex;justify-content:space-between;align-items:center;gap:15px;padding:12px 4px;border-bottom:1px solid #30363a}.record-row strong{font-size:11px;display:block}.record-row small{font-size:9px;color:#899399;display:block;margin-top:5px}.row-actions{display:flex;gap:6px;flex-shrink:0}.row-actions button{background:#202428;border:1px solid #454d53;color:#cbd1d4;padding:7px 9px;font:8px "Courier New",monospace;cursor:pointer}.row-actions button.delete{color:#d2a29a}.form-panel{margin-top:17px;border:1px solid #515a60;background:#1b1f22;padding:16px}.form-panel h3{font:10px "Courier New",monospace;letter-spacing:.13em;margin:0 0 14px;color:#d9dfe1}.form-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}.form-grid label{display:flex;flex-direction:column;gap:6px;font:8px "Courier New",monospace;letter-spacing:.1em;color:#9da7ad}.form-grid label.wide{grid-column:1/-1}.form-grid input,.form-grid select,.form-grid textarea,.data-textarea{width:100%;background:#111416;border:1px solid #41494e;color:#e2e5e6;padding:10px;font:11px system-ui;outline:none}.form-grid input:focus,.form-grid select:focus,.form-grid textarea:focus,.data-textarea:focus{border-color:#aab3b8}.form-grid textarea,.data-textarea{min-height:90px;resize:vertical;line-height:1.5}.form-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:14px}.form-actions button{padding:9px 13px;border:1px solid #50595f;background:#252a2e;color:#e0e4e6;font:9px "Courier New",monospace;cursor:pointer}.form-actions button.save{background:#d0d5d7;color:#151719;border-color:#d0d5d7;font-weight:700}.backup-grid{display:grid;grid-template-columns:1fr 1fr;gap:15px}.backup-box{border:1px solid var(--line);padding:15px}.backup-box h3{font:10px "Courier New",monospace;letter-spacing:.12em;margin:0 0 8px}.backup-box p{font-size:10px;line-height:1.6;color:#98a1a6}.backup-box button{margin-top:8px}.toast{position:fixed;bottom:22px;left:50%;transform:translate(-50%,15px);opacity:0;pointer-events:none;background:#d6dcde;color:#15191b;padding:10px 16px;font:10px "Courier New",monospace;letter-spacing:.06em;transition:.2s;z-index:40}.toast.show{opacity:1;transform:translate(-50%,0)}.no-results{padding:25px;text-align:center;color:#9aa3a8;font-size:11px}.hidden{display:none!important}
+@media(max-width:1050px){.workspace{grid-template-columns:minmax(0,1fr) 260px}.branches{grid-template-columns:repeat(5,155px)}.map-viewport{padding-left:18px;padding-right:18px}.unit-rosters{grid-template-columns:repeat(2,1fr)}}@media(max-width:760px){.shell{width:min(100% - 28px,1440px)}.site-header{padding:0 15px}.header-right .classification{display:none}.hero{padding-top:38px}.hero-row{padding-bottom:25px}.edition{min-width:120px}.controls{align-items:stretch;flex-direction:column}.search{max-width:none}.control-buttons{display:grid;grid-template-columns:repeat(2,1fr)}.button{width:100%}.workspace{grid-template-columns:1fr}.map-viewport{min-height:430px}.details{border-left:0;border-top:1px solid var(--line);min-height:230px}.detail-empty{padding-top:10px}.branches{grid-template-columns:repeat(5,155px)}.unit-rosters{grid-template-columns:1fr}.section-heading{align-items:flex-start;flex-direction:column}.page-footer{flex-direction:column}.stats b{font-size:20px}.stats div{gap:7px;padding-right:8px}.stats div+div{padding-left:9px}.stats span{font-size:7px}.backup-grid{grid-template-columns:1fr}.modal-backdrop{padding:8px}.modal-content{padding:14px}.form-grid{grid-template-columns:1fr}.form-grid label.wide{grid-column:auto}.record-row{align-items:flex-start}.row-actions button{padding:7px}.hero h1{font-size:39px}}@media(max-width:430px){.edition{display:none}.hero h1{font-size:36px}.stats{grid-template-columns:repeat(2,1fr)}.stats div:nth-child(2){border-right:0}.stats div:nth-child(3){padding-left:0;border-top:1px solid var(--line)}.stats div:nth-child(4){border-top:1px solid var(--line)}.map-caption{font-size:7px;gap:10px}.map-caption span:last-child{text-align:right}.branches{grid-template-columns:repeat(5,145px)}}
 
 /* =========================================================
-   GLOBAL SECTION CONFLICT FIX
-   ========================================================= */
-
-/*
-   styles.css contains a global:
-
-       section {
-           padding: 78px 0;
-       }
-
-   The roster dynamically creates sections for nodes and units.
-   Reset them here so the global section styling cannot distort
-   the command tree.
-*/
-
-.roster-body section.roster-node,
-.roster-body section.roster-subunit {
-    padding: 0;
-    border: 0;
-    margin: 0;
-}
-
-
-/* =========================================================
-   HERO
-   ========================================================= */
-
-.roster-hero {
-    padding: 86px 0 42px;
-    border-bottom: 1px solid #252525;
-
-    background:
-        linear-gradient(
-            180deg,
-            rgba(255,255,255,.015),
-            transparent 55%
-        ),
-        #070707;
-}
-
-.roster-eyebrow {
-    margin-bottom: 18px;
-
-    color: #5d5d5d;
-
-    font:
-        800 9px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .18em;
-
-    text-transform: uppercase;
-}
-
-.roster-hero-row {
-    display: flex;
-
-    align-items: flex-end;
-    justify-content: space-between;
-
-    gap: 48px;
-}
-
-.roster-hero h1 {
-    margin: 0;
-
-    color: #eee;
-
-    font-family:
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    font-size:
-        clamp(
-            54px,
-            8vw,
-            92px
-        );
-
-    line-height: .84;
-
-    letter-spacing: -.065em;
-
-    font-weight: 700;
-}
-
-.roster-hero p {
-    max-width: 570px;
-
-    margin: 26px 0 0;
-
-    color: #6c6c6c;
-
-    font-size: 12px;
-
-    line-height: 1.8;
-}
-
-
-/* =========================================================
-   REGISTER STAMP
-   ========================================================= */
-
-.register-stamp {
-    width: 190px;
-
-    flex: 0 0 190px;
-
-    padding: 17px;
-
-    border: 1px solid #292929;
-
-    background: #0c0c0c;
-}
-
-.register-stamp span {
-    display: block;
-
-    margin-bottom: 5px;
-
-    color: #444;
-
-    font:
-        8px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .16em;
-}
-
-.register-stamp strong {
-    display: block;
-
-    margin-bottom: 17px;
-
-    color: #aaa;
-
-    font:
-        700 11px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .1em;
-}
-
-.register-stamp strong:last-child {
-    margin-bottom: 0;
-}
-
-
-/* =========================================================
-   SEARCH
-   ========================================================= */
-
-.roster-search {
-    display: flex;
-
-    align-items: center;
-
-    gap: 13px;
-
-    height: 52px;
-
-    margin-top: 42px;
-
-    padding: 0 14px;
-
-    border: 1px solid #292929;
-
-    background: #0c0c0c;
-
-    transition:
-        border-color .15s ease,
-        background .15s ease;
-}
-
-.roster-search:focus-within {
-    border-color: #444;
-
-    background: #0e0e0e;
-}
-
-.roster-search-symbol {
-    color: #666;
-
-    font:
-        17px/1
-        "Courier New",
-        monospace;
-}
-
-.roster-search input {
-    width: 100%;
-
-    min-width: 0;
-
-    height: 100%;
-
-    padding: 0;
-
-    border: 0;
-
-    outline: 0;
-
-    background: transparent;
-
-    color: #ddd;
-
-    font:
-        10px/1
-        "Courier New",
-        monospace;
-
-    letter-spacing: .1em;
-}
-
-.roster-search input::placeholder {
-    color: #454545;
-}
-
-.roster-search-count {
-    flex: 0 0 auto;
-
-    color: #666;
-
-    font:
-        8px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .1em;
-
-    white-space: nowrap;
-}
-
-
-/* =========================================================
-   FILTER
-   ========================================================= */
-
-.roster-filter-row {
-    display: flex;
-
-    align-items: center;
-    justify-content: space-between;
-
-    gap: 20px;
-
-    padding: 14px 0;
-
-    border-bottom: 1px solid #202020;
-}
-
-.roster-filter-row > span {
-    color: #444;
-
-    font:
-        8px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .15em;
-
-    white-space: nowrap;
-}
-
-.roster-filters {
-    display: flex;
-
-    flex-wrap: wrap;
-
-    justify-content: flex-end;
-
-    gap: 4px;
-}
-
-.roster-filter {
-    appearance: none;
-
-    padding: 6px 10px;
-
-    border: 1px solid #242424;
-
-    border-radius: 0;
-
-    background: transparent;
-
-    color: #555;
-
-    font:
-        8px/1
-        "Courier New",
-        monospace;
-
-    letter-spacing: .1em;
-
-    cursor: pointer;
-
-    transition:
-        color .15s ease,
-        border-color .15s ease,
-        background .15s ease;
-}
-
-.roster-filter:hover {
-    border-color: #444;
-
-    color: #aaa;
-}
-
-.roster-filter.active {
-    border-color: #4b4b4b;
-
-    background: #171717;
-
-    color: #ddd;
-}
-
-
-/* =========================================================
-   ROSTER BODY
-   ========================================================= */
-
-.roster-body {
-    padding: 42px 0 110px;
-}
-
-
-/* =========================================================
-   CATEGORY
-   ========================================================= */
-
-.roster-type-category {
-    margin: 0 0 58px;
-}
-
-.roster-type-category
-> .roster-node-header {
-    display: flex;
-
-    align-items: baseline;
-    justify-content: space-between;
-
-    gap: 18px;
-
-    padding-bottom: 11px;
-
-    border-bottom: 1px solid #303030;
-}
-
-.roster-type-category
-> .roster-node-header
-.roster-node-title {
-    color: #d2d2d2;
-
-    font:
-        600 13px/1.4
-        Arial,
-        Helvetica,
-        sans-serif;
-
-    letter-spacing: .1em;
-}
-
-.roster-type-category
-> .roster-node-children {
-    margin-top: 18px;
-}
-
-
-/* =========================================================
-   DIRECTORATE
-   ========================================================= */
-
-.roster-type-directorate {
-    position: relative;
-
-    margin-top: 31px;
-
-    padding-left: 22px !important;
-}
-
-.roster-type-directorate::before {
-    content: "";
-
-    position: absolute;
-
-    left: 0;
-
-    top: 4px;
-    bottom: 4px;
-
-    width: 1px;
-
-    background: #252525;
-}
-
-.roster-type-directorate
-> .roster-node-header {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-}
-
-.roster-type-directorate
-> .roster-node-header::before {
-    content: "";
-
-    width: 5px;
-    height: 5px;
-
-    flex: 0 0 5px;
-
-    background: #666;
-}
-
-.roster-type-directorate
-> .roster-node-header
-.roster-node-title {
-    color: #888;
-
-    font:
-        10px/1.5
-        "Courier New",
-        monospace;
-
-    letter-spacing: .13em;
-}
-
-
-/* =========================================================
-   GENERIC NODE
-   ========================================================= */
-
-.roster-node {
-    position: relative;
-
-    min-width: 0;
-}
-
-
-/* =========================================================
-   APPOINTMENT
-   ========================================================= */
-
-.roster-type-appointment {
-    margin-top: 13px !important;
-
-    padding-left: 25px !important;
-}
-
-.roster-type-appointment::before {
-    content: "";
-
-    position: absolute;
-
-    left: 4px;
-
-    top: 12px;
-
-    width: 12px;
-    height: 1px;
-
-    background: #292929;
-}
-
-.roster-type-appointment
-> .roster-node-header {
-    display: flex;
-
-    align-items: baseline;
-
-    flex-wrap: wrap;
-
-    gap: 8px;
-
-    min-height: 27px;
-}
-
-
-/* =========================================================
-   NODE TEXT
-   ========================================================= */
-
-.roster-node-title {
-    color: #aaa;
-
-    font:
-        9px/1.6
-        "Courier New",
-        monospace;
-
-    letter-spacing: .05em;
-}
-
-.roster-node-personnel {
-    color: #ddd;
-
-    font:
-        9px/1.6
-        "Courier New",
-        monospace;
-
-    letter-spacing: .04em;
-}
-
-.roster-node-note {
-    margin:
-        1px
-        0
-        7px
-        25px;
-
-    color: #444;
-
-    font:
-        7px/1.6
-        "Courier New",
-        monospace;
-
-    letter-spacing: .07em;
-
-    text-transform: uppercase;
-}
-
-
-/* =========================================================
-   CHILDREN
-   ========================================================= */
-
-.roster-node-children {
-    margin:
-        4px
-        0
-        0
-        12px;
-
-    padding:
-        0
-        0
-        0
-        18px;
-
-    border-left: 1px solid #1d1d1d;
-}
-
-
-/* =========================================================
-   UNITS
-   ========================================================= */
-
-.roster-subunit {
-    overflow: hidden;
-
-    margin: 38px 0 0 !important;
-
-    border: 1px solid #222 !important;
-
-    background: #0a0a0a;
-}
-
-.subunit-heading {
-    display: flex;
-
-    align-items: center;
-
-    gap: 10px;
-
-    min-height: 49px;
-
-    padding: 15px 20px;
-
-    border-bottom: 1px solid #202020;
-
-    background: #0c0c0c;
-}
-
-.subunit-heading::before {
-    content: "";
-
-    width: 5px;
-    height: 5px;
-
-    flex: 0 0 5px;
-
-    background: #666;
-}
-
-.subunit-title {
-    color: #bbb;
-
-    font:
-        600 9px/1.5
-        "Courier New",
-        monospace;
-
-    letter-spacing: .12em;
-}
-
-.unit-command-tree {
-    padding: 13px 20px 18px;
-}
-
-
-/* =========================================================
-   PERSONNEL LIST
-   ========================================================= */
-
-.personnel-list {
-    border-top: 1px solid #191919;
-}
-
-.personnel-entry {
-    width: 100%;
-
-    display: grid;
-
-    grid-template-columns:
-        45px
-        60px
-        minmax(170px, 1fr)
-        minmax(210px, 1.1fr)
-        100px;
-
-    align-items: center;
-
-    min-height: 59px;
-
-    padding: 0 20px;
-
-    border: 0;
-
-    border-bottom: 1px solid #191919;
-
-    border-radius: 0;
-
-    background: transparent;
-
-    color: inherit;
-
-    text-align: left;
-
-    cursor: pointer;
-
-    appearance: none;
-
-    transition:
-        background .15s ease,
-        padding-left .15s ease;
-}
-
-.personnel-entry:last-child {
-    border-bottom: 0;
-}
-
-.personnel-entry:hover,
-.personnel-entry:focus-visible {
-    padding-left: 27px;
-
-    background: #101010;
-}
-
-.personnel-entry:focus-visible {
-    outline: 1px solid #4a4a4a;
-
-    outline-offset: -1px;
-}
-
-
-/* =========================================================
-   INDEX
-   ========================================================= */
-
-.personnel-index {
-    color: #3b3b3b;
-
-    font:
-        8px/1
-        "Courier New",
-        monospace;
-}
-
-
-/* =========================================================
-   RANK
-   ========================================================= */
-
-.personnel-rank {
-    color: #999;
-
-    font:
-        700 9px/1
-        "Courier New",
-        monospace;
-}
-
-
-/* =========================================================
-   NAME
-   ========================================================= */
-
-.personnel-name-block {
-    min-width: 0;
-}
-
-.personnel-name {
-    overflow: hidden;
-
-    color: #ddd;
-
-    font-size: 11px;
-
-    font-weight: 600;
-
-    white-space: nowrap;
-
-    text-overflow: ellipsis;
-}
-
-.personnel-callsign {
-    margin-top: 4px;
-
-    overflow: hidden;
-
-    color: #505050;
-
-    font:
-        7px/1.2
-        "Courier New",
-        monospace;
-
-    letter-spacing: .1em;
-
-    white-space: nowrap;
-
-    text-overflow: ellipsis;
-}
-
-
-/* =========================================================
-   APPOINTMENT
-   ========================================================= */
-
-.personnel-appointment {
-    min-width: 0;
-
-    padding-right: 20px;
-
-    color: #666;
-
-    font:
-        8px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .05em;
-}
-
-.personnel-appointment span {
-    display: block;
-
-    overflow: hidden;
-
-    white-space: nowrap;
-
-    text-overflow: ellipsis;
-}
-
-
-/* =========================================================
-   STATUS
-   ========================================================= */
-
-.personnel-status {
-    justify-self: start;
-
-    display: inline-flex;
-
-    align-items: center;
-
-    gap: 7px;
-
-    padding: 5px 8px;
-
-    border: 1px solid #292929;
-
-    color: #555;
-
-    font:
-        7px/1
-        "Courier New",
-        monospace;
-
-    letter-spacing: .1em;
-
-    white-space: nowrap;
-}
-
-.personnel-status::before {
-    content: "";
-
-    width: 5px;
-    height: 5px;
-
-    flex: 0 0 5px;
-
-    border-radius: 50%;
-
-    background: #444;
-}
-
-.personnel-status.active {
-    color: #aaa;
-}
-
-.personnel-status.active::before {
-    background: #aaa;
-}
-
-.personnel-status.loa,
-.personnel-status.reserve {
-    color: #777;
-}
-
-.personnel-status.inactive {
-    color: #444;
-}
-
-
-/* =========================================================
-   EMPTY STATE
-   ========================================================= */
-
-.hidden {
-    display: none !important;
+   ISOC SITE NAVIGATION
+   Adapted from the main site's styles.css.
+   Scoped to the top-level navigation so it does not affect
+   the roster editor's own <nav class="tabs"> element.
+========================================================= */
+
+body > nav {
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  width: 100%;
+  background: rgba(7, 7, 7, 0.96);
+  -webkit-backdrop-filter: blur(10px);
+  backdrop-filter: blur(10px);
+  border-bottom: 1px solid #292929;
+}
+
+body > nav,
+body > nav * {
+  box-sizing: border-box;
+}
+
+body > nav .wrap {
+  width: min(1160px, calc(100% - 36px));
+  margin: 0 auto;
+}
+
+body > nav .nav {
+  min-height: 70px;
+  height: 70px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 22px;
+}
+
+body > nav .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  flex: 0 0 auto;
+  color: #eeeeee;
+  text-decoration: none;
+  font-size: 14px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  white-space: nowrap;
+}
+
+body > nav .nav-logo {
+  display: block;
+  width: 65px;
+  height: 65px;
+  object-fit: contain;
+  flex: 0 0 65px;
+}
+
+body > nav .links {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 24px;
+  min-width: 0;
+  color: #bababa;
+  font-size: 12px;
+}
+
+body > nav .links > a,
+body > nav .nav-dropdown-toggle {
+  color: #bababa;
+  text-decoration: none;
+  font: inherit;
+  font-size: 12px;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+body > nav .links > a:hover,
+body > nav .nav-dropdown-toggle:hover,
+body > nav .nav-dropdown.open .nav-dropdown-toggle {
+  color: #ffffff;
+}
+
+body > nav .nav-dropdown {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+}
+
+body > nav .nav-dropdown-toggle {
+  appearance: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+body > nav .nav-chevron {
+  display: inline-block;
+  font-size: 10px;
+  transition: transform 0.2s ease;
+}
+
+body > nav .nav-dropdown.open .nav-chevron,
+body > nav .nav-dropdown:focus-within .nav-chevron {
+  transform: rotate(180deg);
+}
+
+body > nav .nav-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 14px);
+  left: 50%;
+  z-index: 110;
+  width: 285px;
+  padding: 8px;
+  background: rgba(14, 14, 14, 0.99);
+  border: 1px solid #2e2e2e;
+  box-shadow: 0 18px 45px rgba(0, 0, 0, 0.42);
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transform: translate(-50%, -6px);
+  transition:
+    opacity 0.16s ease,
+    transform 0.16s ease,
+    visibility 0.16s ease;
+}
+
+/* Hover and keyboard support; .open supports the site's click handler. */
+body > nav .nav-dropdown:hover .nav-dropdown-menu,
+body > nav .nav-dropdown:focus-within .nav-dropdown-menu,
+body > nav .nav-dropdown.open .nav-dropdown-menu {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+  transform: translate(-50%, 0);
+}
+
+body > nav .nav-dropdown-item {
+  display: grid;
+  grid-template-columns: 34px minmax(0, 1fr);
+  gap: 10px;
+  align-items: center;
+  padding: 11px 10px;
+  border: 1px solid transparent;
+  color: #dcdcdc;
+  text-decoration: none;
+  transition:
+    background 0.16s ease,
+    border-color 0.16s ease,
+    color 0.16s ease;
+}
+
+body > nav .nav-dropdown-item:hover,
+body > nav .nav-dropdown-item:focus-visible {
+  background: #191919;
+  border-color: #333333;
+  color: #ffffff;
+}
+
+body > nav .dropdown-index {
+  color: #777777;
+  font: 10px "Courier New", monospace;
+  letter-spacing: 0.08em;
+}
+
+body > nav .nav-dropdown-item strong {
+  display: block;
+  color: inherit;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+}
+
+body > nav .nav-dropdown-item small {
+  display: block;
+  margin-top: 4px;
+  color: #777777;
+  font-size: 10px;
+  line-height: 1.35;
+}
+
+body > nav .nav-actions {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex: 0 0 auto;
+}
+
+body > nav .discord-btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 40px;
+  padding: 0 15px;
+  border: 1px solid #3a3a3a;
+  background: #111111;
+  color: #d8d8d8;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+  transition:
+    background 0.2s ease,
+    border-color 0.2s ease,
+    color 0.2s ease;
+}
+
+body > nav .discord-btn:hover {
+  background: #1b1b1b;
+  border-color: #666666;
+  color: #ffffff;
+}
+
+body > nav .enlist-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: auto;
+  min-width: 125px;
+  height: 40px;
+  padding: 0 15px;
+  overflow: hidden;
+  border: 1px solid #ffffff;
+  background: #ffffff;
+  color: #050505;
+  text-decoration: none;
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: 0.12em;
+  isolation: isolate;
+  transition: color 0.25s ease, background 0.25s ease;
+}
+
+body > nav .enlist-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: -120%;
+  width: 80%;
+  height: 100%;
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.18), transparent);
+  transform: skewX(-20deg);
+  animation: rosterNavEnlistScan 2.8s linear infinite;
+  z-index: -1;
+}
+
+@keyframes rosterNavEnlistScan {
+  to { left: 140%; }
+}
+
+body > nav .enlist-btn::after {
+  content: "";
+  position: absolute;
+  inset: 3px;
+  background:
+    linear-gradient(90deg, transparent 48%, rgba(0, 0, 0, 0.10) 49%, transparent 50%),
+    linear-gradient(0deg, transparent 48%, rgba(0, 0, 0, 0.10) 49%, transparent 50%);
+  background-size: 8px 8px;
+  opacity: 0;
+  transition: opacity 0.25s ease;
+  pointer-events: none;
+}
+
+body > nav .enlist-btn:hover {
+  background: #050505;
+  color: #ffffff;
+}
+
+body > nav .enlist-btn:hover::after {
+  opacity: 1;
+}
+
+body > nav .enlist-text,
+body > nav .enlist-arrow {
+  position: relative;
+  z-index: 2;
+}
+
+body > nav .enlist-arrow {
+  transition: transform 0.2s ease;
+}
+
+body > nav .enlist-btn:hover .enlist-arrow {
+  transform: translateX(4px);
+}
+
+/* The roster page's own editor navigation must remain non-sticky. */
+.modal .tabs {
+  position: static;
+  top: auto;
+  z-index: auto;
+  background: transparent;
+  -webkit-backdrop-filter: none;
+  backdrop-filter: none;
+}
+
+@media (max-width: 1100px) {
+  body > nav .links {
+    gap: 14px;
+  }
+
+  body > nav .nav-logo {
+    width: 55px;
+    height: 55px;
+    flex-basis: 55px;
+  }
 }
-
-.roster-empty {
-    padding: 90px 20px;
-
-    border: 1px solid #222;
-
-    text-align: center;
-}
-
-.roster-empty > div {
-    margin-bottom: 12px;
-
-    color: #333;
-
-    font:
-        30px/1
-        "Courier New",
-        monospace;
-}
-
-.roster-empty strong {
-    color: #777;
-
-    font:
-        9px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .16em;
-}
-
-.roster-empty p {
-    margin: 10px 0 0;
-
-    color: #444;
-
-    font-size: 11px;
-}
-
-
-/* =========================================================
-   PROFILE MODAL
-   ========================================================= */
-
-.personnel-modal {
-    position: fixed;
-
-    inset: 0;
-
-    z-index: 99999;
-
-    display: flex;
-
-    align-items: center;
-    justify-content: center;
-
-    padding: 25px;
-
-    opacity: 0;
-
-    visibility: hidden;
-
-    pointer-events: none;
-
-    transition:
-        opacity .2s ease,
-        visibility .2s ease;
-}
-
-.personnel-modal.open {
-    opacity: 1;
-
-    visibility: visible;
-
-    pointer-events: auto;
-}
-
-.personnel-modal-backdrop {
-    position: absolute;
-
-    inset: 0;
-
-    background: rgba(0,0,0,.91);
-
-    backdrop-filter: blur(9px);
-}
-
-.personnel-profile {
-    position: relative;
-
-    z-index: 2;
-
-    width: min(680px, 100%);
-
-    max-height:
-        min(
-            760px,
-            calc(100vh - 50px)
-        );
-
-    overflow: auto;
-
-    padding: 32px;
-
-    border: 1px solid #353535;
-
-    background: #0b0b0b;
-
-    box-shadow:
-        0 30px 100px
-        rgba(0,0,0,.75);
-}
-
-.profile-close {
-    position: absolute;
-
-    top: 12px;
-    right: 12px;
-
-    width: 36px;
-    height: 36px;
-
-    border: 1px solid #292929;
-
-    border-radius: 0;
-
-    background: transparent;
-
-    color: #666;
-
-    font:
-        22px/1
-        Arial,
-        sans-serif;
-
-    cursor: pointer;
-}
-
-.profile-close:hover,
-.profile-close:focus-visible {
-    border-color: #555;
-
-    color: #eee;
-
-    outline: none;
-}
-
-.profile-eyebrow {
-    color: #555;
-
-    font:
-        8px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .17em;
-}
-
-.profile-header {
-    display: flex;
-
-    align-items: center;
-
-    gap: 22px;
-
-    margin-top: 30px;
-}
-
-.profile-rank {
-    color: #777;
-
-    font:
-        700 16px/1
-        "Courier New",
-        monospace;
-}
-
-.profile-name {
-    color: #eee;
-
-    font-size: 28px;
-
-    font-weight: 600;
-}
-
-.profile-callsign {
-    margin-top: 5px;
-
-    color: #666;
-
-    font:
-        9px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .15em;
-}
-
-.profile-line {
-    height: 1px;
-
-    margin: 30px 0;
-
-    background: #252525;
-}
-
-
-/* =========================================================
-   PROFILE GRID
-   ========================================================= */
-
-.profile-grid {
-    display: grid;
-
-    grid-template-columns:
-        1fr
-        1fr;
-
-    gap: 10px;
-}
-
-.profile-field {
-    min-width: 0;
-
-    padding: 14px;
-
-    border: 1px solid #1e1e1e;
-
-    background: #080808;
-}
-
-.profile-field span {
-    display: block;
-
-    margin-bottom: 7px;
-
-    color: #444;
-
-    font:
-        7px/1.4
-        "Courier New",
-        monospace;
-
-    letter-spacing: .15em;
-}
-
-.profile-field strong {
-    display: block;
-
-    overflow-wrap: anywhere;
-
-    color: #aaa;
-
-    font:
-        9px/1.6
-        "Courier New",
-        monospace;
-
-    letter-spacing: .05em;
-}
-
-.profile-wide {
-    grid-column: 1 / -1;
-}
-
-body:has(.personnel-modal.open) {
-    overflow: hidden;
-}
-
-
-/* =========================================================
-   RESPONSIVE
-   ========================================================= */
 
 @media (max-width: 900px) {
+  body > nav .links {
+    display: none;
+  }
 
-    .roster-container {
-        width:
-            min(
-                calc(100% - 35px),
-                760px
-            );
-    }
+  body > nav .nav-actions {
+    gap: 6px;
+  }
 
-    .roster-hero {
-        padding-top: 64px;
-    }
+  body > nav .discord-btn {
+    display: none;
+  }
 
-    .roster-hero-row {
-        align-items: stretch;
+  body > nav .enlist-btn {
+    min-width: 105px;
+  }
 
-        flex-direction: column;
+  body > nav .nav-dropdown-menu {
+    right: 0;
+    left: auto;
+    transform: translateY(-6px);
+  }
 
-        gap: 30px;
-    }
-
-    .register-stamp {
-        width: 100%;
-
-        flex-basis: auto;
-    }
-
-    .roster-filter-row {
-        align-items: flex-start;
-
-        flex-direction: column;
-    }
-
-    .roster-filters {
-        justify-content: flex-start;
-    }
-
-    .personnel-entry {
-        grid-template-columns:
-            34px
-            52px
-            minmax(0, 1fr)
-            88px;
-
-        padding: 0 14px;
-    }
-
-    .personnel-appointment {
-        display: none;
-    }
-
-    .personnel-status {
-        justify-self: end;
-    }
-
-    .unit-command-tree {
-        padding-inline: 14px;
-    }
-
-    .subunit-heading {
-        padding-inline: 14px;
-    }
-
-    .roster-type-directorate {
-        padding-left: 18px !important;
-    }
+  body > nav .nav-dropdown.open .nav-dropdown-menu,
+  body > nav .nav-dropdown:focus-within .nav-dropdown-menu,
+  body > nav .nav-dropdown:hover .nav-dropdown-menu {
+    transform: translateY(0);
+  }
 }
 
-
-/* =========================================================
-   SMALL MOBILE
-   ========================================================= */
-
 @media (max-width: 560px) {
+  body > nav .wrap {
+    width: calc(100% - 28px);
+  }
 
-    .roster-container {
-        width: calc(100% - 28px);
-    }
+  body > nav .nav {
+    min-height: 62px;
+    height: 62px;
+  }
 
-    .roster-hero {
-        padding:
-            54px
-            0
-            34px;
-    }
+  body > nav .nav-logo {
+    width: 48px;
+    height: 48px;
+    flex-basis: 48px;
+  }
+}
 
-    .roster-hero h1 {
-        font-size: 48px;
-    }
+@media (prefers-reduced-motion: reduce) {
+  body > nav .nav-dropdown-menu,
+  body > nav .nav-chevron,
+  body > nav .enlist-btn,
+  body > nav .enlist-arrow {
+    transition: none;
+  }
 
-    .roster-hero p {
-        font-size: 10px;
-    }
-
-    .roster-search {
-        height: 48px;
-
-        margin-top: 28px;
-    }
-
-    .roster-search input {
-        font-size: 8px;
-    }
-
-    .roster-search-count {
-        font-size: 7px;
-    }
-
-    .roster-node-title,
-    .roster-node-personnel {
-        font-size: 8px;
-    }
-
-    .subunit-title {
-        font-size: 8px;
-    }
-
-    .personnel-entry {
-        grid-template-columns:
-            25px
-            43px
-            minmax(0, 1fr)
-            65px;
-
-        min-height: 52px;
-
-        padding: 0 10px;
-    }
-
-    .personnel-entry:hover,
-    .personnel-entry:focus-visible {
-        padding-left: 13px;
-    }
-
-    .personnel-name {
-        font-size: 10px;
-    }
-
-    .personnel-callsign {
-        font-size: 6px;
-    }
-
-    .personnel-rank {
-        font-size: 8px;
-    }
-
-    .personnel-status {
-        gap: 5px;
-
-        padding:
-            4px
-            5px;
-
-        font-size: 6px;
-    }
-
-    .personnel-profile {
-        padding: 23px;
-    }
-
-    .profile-header {
-        display: block;
-    }
-
-    .profile-rank {
-        margin-bottom: 8px;
-    }
-
-    .profile-name {
-        font-size: 22px;
-    }
-
-    .profile-grid {
-        grid-template-columns: 1fr;
-    }
-
-    .profile-wide {
-        grid-column: auto;
-    }
+  body > nav .enlist-btn::before {
+    animation: none;
+  }
 }

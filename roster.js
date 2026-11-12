@@ -1,2552 +1,516 @@
-/* =========================================================
-   KSOL PERSONNEL REGISTER
-   ========================================================= */
+/* ISOC Command Roster — interface and in-memory data editor. No localStorage. */
+(() => {
+  "use strict";
 
+  const source = window.ISOC_ROSTER_DATA;
+  if (!source || !Array.isArray(source.people) || !Array.isArray(source.units) || !Array.isArray(source.appointments)) {
+    document.body.innerHTML = '<main style="padding:40px;color:#eee;font:16px system-ui">Roster data could not be loaded. Ensure roster-data.js is beside roster.html.</main>';
+    throw new Error("ISOC_ROSTER_DATA missing or invalid");
+  }
 
-/*
-    =========================================================
-    PERSONNEL DATABASE
-    =========================================================
+  let data = structuredClone(source);
+  // Normalize older single-incumbent records to the multi-incumbent format.
+  data.appointments = data.appointments.map(a => ({
+    ...a,
+    personIds: Array.isArray(a.personIds) ? a.personIds : (a.personId ? [a.personId] : [])
+  }));
+  data.appointments.forEach(a => { delete a.personId; });
+  let selected = null;
+  let query = "";
+  let collapsed = new Set();
+  let activeTab = "people";
+  let editingId = null;
+  let toastTimer;
 
-    Every actual person is stored here.
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const esc = value => String(value ?? "").replace(/[&<>"']/g, c => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const byId = (list, id) => list.find(item => item.id === id) || null;
+  const getPerson = id => byId(data.people, id);
+  const getUnit = id => byId(data.units, id);
+  const getAppointment = id => byId(data.appointments, id);
+  const unitAppointments = unitId => data.appointments.filter(a => a.unitId === unitId && !a.parentId).sort(orderSort);
+  const children = id => data.appointments.filter(a => a.parentId === id).sort(orderSort);
+  const orderSort = (a, b) => (Number(a.order) || 0) - (Number(b.order) || 0);
+  const incumbents = appointment => (appointment.personIds || (appointment.personId ? [appointment.personId] : []))
+    .map(getPerson).filter(Boolean);
+  const displayPerson = p => p ? `${p.rank ? p.rank + " · " : ""}${p.name}` : "VACANT";
+  const displayIncumbents = appointment => {
+    const people = incumbents(appointment);
+    return people.length ? people.map(displayPerson).join(" / ") : "VACANT";
+  };
+  const norm = value => String(value ?? "").toLocaleLowerCase();
+  const isMatch = value => !query || norm(value).includes(query);
 
-    The organizational hierarchy is defined separately below.
+  function toast(message) {
+    const el = $("#toast");
+    el.textContent = message;
+    el.classList.add("show");
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => el.classList.remove("show"), 2300);
+  }
 
-    IMPORTANT:
+  function updateStats() {
+    $("#stat-units").textContent = String(data.units.length).padStart(2, "0");
+    $("#stat-appointments").textContent = String(data.appointments.length).padStart(2, "0");
+    $("#stat-personnel").textContent = String(data.people.length).padStart(2, "0");
+    $("#stat-vacant").textContent = String(data.appointments.filter(a => !incumbents(a).length).length).padStart(2, "0");
+  }
 
-    A PERSON has:
-        - name
-        - rank
-        - status
-        - unit
-        - appointment
+  function appointmentSearchText(a) {
+    const people = incumbents(a);
+    const u = getUnit(a.unitId);
+    return [a.title, a.duties, ...people.flatMap(p => [p.name, p.rank, p.callsign]), u?.name, u?.short].join(" ");
+  }
 
-    A UNIT has:
-        - command appointment
-        - child units
-        - directly assigned personnel
+  function hasMatchingDescendant(a) {
+    return children(a.id).some(child => isMatch(appointmentSearchText(child)) || hasMatchingDescendant(child));
+  }
 
+  function nodeMarkup(a, depth = 0) {
+    const people = incumbents(a);
+    const kids = children(a.id);
+    const hasKids = kids.length > 0;
+    const isCollapsed = collapsed.has(a.id) && !query;
+    return `
+      <div class="chain-item ${isCollapsed ? "collapsed" : ""}" data-chain="${esc(a.id)}">
+        <div class="chain-card">
+          <div class="org-node ${selected === a.id ? "selected" : ""}" data-select="${esc(a.id)}" role="button" tabindex="0" aria-label="View ${esc(a.title)}">
+            <div class="node-top">
+              <span class="node-symbol">${String(depth + 1).padStart(2, "0")}</span>
+              <div class="node-copy">
+                <div class="node-type">${esc(getUnit(a.unitId)?.short || "ISOC")} / APPOINTMENT</div>
+                <div class="node-title">${esc(a.title)}</div>
+                <div class="node-incumbent ${people.length ? "" : "vacant"}">${people.length ? people.map(p => esc(displayPerson(p))).join("<br>") : "VACANT"}</div>
+              </div>
+              ${hasKids ? `<button class="node-toggle" data-toggle="${esc(a.id)}" aria-label="${isCollapsed ? "Expand" : "Collapse"} ${esc(a.title)}">${isCollapsed ? "+" : "−"}</button>` : ""}
+            </div>
+          </div>
+        </div>
+        ${hasKids ? `<div class="chain-children">${kids.filter(k => !query || isMatch(appointmentSearchText(k)) || hasMatchingDescendant(k)).map(k => nodeMarkup(k, depth + 1)).join("")}</div>` : ""}
+      </div>`;
+  }
 
-    Example:
+  function memberCards(unitId) {
+    const appointedIds = new Set(data.appointments.flatMap(a => a.personIds || (a.personId ? [a.personId] : [])));
+    const members = data.people.filter(p => p.unitId === unitId && !appointedIds.has(p.id));
+    if (!members.length) return "";
+    const visible = members.filter(p => !query || isMatch([p.name, p.rank, p.callsign, p.status, p.duties].join(" ")));
+    if (query && !visible.length) return "";
+    return `<div class="unit-members"><div class="unit-members-title">OTHER ASSIGNED PERSONNEL / ${visible.length}</div>${visible.map(p => `
+      <div class="member-chip" data-person-select="${esc(p.id)}" role="button" tabindex="0"><span>${esc(p.name)} <small>· ${esc(p.rank || "—")}</small></span><small>${esc(p.callsign || p.status || "MEMBER")}</small></div>`).join("")}</div>`;
+  }
 
-        Vex
-        unit: "7 PARA"
-        appointment: "CO, Parachute Regiment"
+  function branchMarkup(unit) {
+    const roots = unitAppointments(unit.id);
+    const matchesUnit = isMatch([unit.name, unit.short, unit.category, unit.description].join(" "));
+    const matchingTree = roots.some(a => isMatch(appointmentSearchText(a)) || hasMatchingDescendant(a));
+    const matchingMembers = data.people.some(p => p.unitId === unit.id && isMatch([p.name, p.rank, p.callsign, p.duties].join(" ")));
+    if (query && !matchesUnit && !matchingTree && !matchingMembers) return "";
 
-    This means Vex belongs to 7 PARA while holding the
-    regimental CO appointment.
+    const isRestricted = unit.id === "22sg" || unit.category === "DESIGNATION ONLY";
+    return `
+      <section class="branch">
+        <div class="branch-stem"></div>
+        <div class="org-node unit-node ${selected === unit.id ? "selected" : ""}" data-select-unit="${esc(unit.id)}" role="button" tabindex="0">
+          <div class="node-top">
+            <span class="node-symbol">${isRestricted ? "◈" : "U"}</span>
+            <div class="node-copy">
+              <div class="node-type">${esc(unit.short)}</div>
+              <div class="node-title">${esc(unit.name)}</div>
+              <div class="node-incumbent">${isRestricted ? "PUBLIC DESIGNATION ONLY" : `${roots.length} COMMAND POSTS · ${data.people.filter(p => p.unitId === unit.id).length} PERSONNEL`}</div>
+            </div>
+          </div>
+        </div>
+        ${isRestricted ? `<div class="restricted-note">PUBLIC DESIGNATION ONLY<br>NO FURTHER DETAILS PUBLISHED</div>` : `
+          <div class="branch-content">
+            ${roots.length ? `<div class="connector"></div><div class="chain">${roots.filter(a => !query || isMatch(appointmentSearchText(a)) || hasMatchingDescendant(a)).map(a => nodeMarkup(a)).join("")}</div>` : ""}
+            ${memberCards(unit.id)}
+          </div>`}
+      </section>`;
+  }
 
-    The hierarchy therefore becomes:
+  function renderMap() {
+    const hq = getUnit("hq") || data.units[0];
+    const hqRoots = unitAppointments(hq.id);
+    const visibleHQ = hqRoots.filter(a => !query || isMatch(appointmentSearchText(a)) || hasMatchingDescendant(a));
+    const operational = data.units.filter(u => u.id !== hq.id);
+    const visibleUnits = operational.map(branchMarkup).filter(Boolean).join("");
+    const rootVisible = !query || isMatch([hq.name, hq.short, hq.description].join(" ")) || visibleHQ.length > 0 || visibleUnits.length > 0;
+    $("#org-map").innerHTML = rootVisible ? `
+      <div class="org-node root-node ${selected === hq.id ? "selected" : ""}" data-select-unit="${esc(hq.id)}" role="button" tabindex="0">
+        <div class="node-top"><span class="node-symbol">HQ</span><div class="node-copy"><div class="node-type">APEX COMMAND ELEMENT</div><div class="node-title">INTERNATIONAL SPECIAL OPERATIONS COMMAND</div><div class="node-incumbent">ISOC HEADQUARTERS</div></div></div>
+        <div class="node-count">${data.people.filter(p => p.unitId === hq.id).length} HQ PERSONNEL · ${hqRoots.length} HQ APPOINTMENTS</div>
+      </div>
+      <div class="connector"></div>
+      <div class="branches">
+        <section class="branch hq-branch"><div class="branch-stem"></div>
+          <div class="org-node unit-node ${selected === "hq-appointments" ? "selected" : ""}" data-select-unit="hq-appointments" role="button" tabindex="0">
+            <div class="node-top"><span class="node-symbol">HQ</span><div class="node-copy"><div class="node-type">COMMAND APPOINTMENTS</div><div class="node-title">ISOC HQ ELEMENT</div><div class="node-incumbent">${hqRoots.length} APPOINTMENTS</div></div></div>
+          </div>
+          <div class="branch-content"><div class="connector"></div><div class="chain">${visibleHQ.map(a => nodeMarkup(a)).join("")}</div>${memberCards(hq.id)}</div>
+        </section>
+        ${visibleUnits}
+      </div>` : `<div class="no-results">NO MATCHING RECORDS FOUND</div>`;
+  }
 
-        Parachute Regiment
-        ├── CO, Parachute Regiment — Vex
-        │
-        └── 7 Para Bn
-            ├── CO, 7 Para Bn — Diabeto
-            └── Alpha Coy
-*/
-
-
-const personnel = {
-
-    /* =====================================================
-       HEADQUARTERS
-    ===================================================== */
-
-    obi: {
-        name: 'GEN. "Obi"',
-        rank: "GEN",
-        callsign: "COMMANDER",
-        serviceNumber: "KSOL-2601",
-        status: "active",
-        unit: "HQ",
-        appointment: "Commander, KSOL",
-        joinDate: "2026",
-        note: "Commander, Kali Special Operations Legion."
-    },
-
-    wolf: {
-        name: 'LTG. "Fuego"',
-        rank: "LTG",
-        callsign: "2I/C",
-        serviceNumber: "KSOL-2611",
-        status: "active",
-        unit: "HQ",
-        appointment: "2i/c, KSOL",
-        joinDate: "2026",
-        note: "Second-in-command, Kali Special Operations Legion."
-    },
-
-
-    /* =====================================================
-       DIRECTOR GENERAL APPOINTMENTS
-    ===================================================== */
-
-    dgTraining: {
-        name: "N/A",
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "-",
-        status: "vacant",
-        unit: "Training Command",
-        appointment: "Director General, Training Command",
-        joinDate: "-",
-        note: "Current Director General of Training Command."
-    },
-
-    dgRecruitment: {
-        name: "N/A",
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "-",
-        status: "vacant",
-        unit: "Recruitment Command",
-        appointment: "Director General, Recruitment Command",
-        joinDate: "-",
-        note: "Current Director General of Recruitment Command."
-    },
-
-    dgOperations: {
-        name: 'COL. "Councillor Jasko"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "-",
-        status: "active",
-        unit: "Military Operations",
-        appointment: "Director General, Military Operations",
-        joinDate: "2026",
-        note: "Current Director General of Military Operations."
-    },
-
-    dgInternal: {
-        name: 'COL. "Border"',
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "-",
-        status: "active",
-        unit: "Internal Affairs",
-        appointment: "Director General, Internal Affairs",
-        joinDate: "2026",
-        note: "Current Director General of Internal Affairs."
-    },
-
-    dgPublicRelations: {
-        name: 'COL. "Fuego"',
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-DG05",
-        status: "active",
-        unit: "Public Relations",
-        appointment: "Director General, Public Relations",
-        joinDate: "2026",
-        note: "Current Director General of Public Relations."
-    },
-
-    dgAdministrative: {
-        name: 'COL. "Golden"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "-",
-        status: "active",
-        unit: "Administrative Duties",
-        appointment: "Director General, Administrative Duties",
-        joinDate: "2026",
-        note: "Current Director General of Administrative Duties."
-    },
-
-
-    /* =====================================================
-       TRAINING COMMAND
-    ===================================================== */
-
-    john: {
-        name: "N/A",
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-0101",
-        status: "active",
-        unit: "Training Command",
-        appointment: "Adjutant, Military Training Command",
-        joinDate: "2026",
-        note: ""
-    },
-
-    doe: {
-        name: "N/A",
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "-",
-        status: "active",
-        unit: "Training Command",
-        appointment: "Adjutant, Aerial Training Command",
-        joinDate: "2026",
-        note: ""
-    },
-
-    lorem: {
-        name: "N/A",
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-0103",
-        status: "active",
-        unit: "Training Command",
-        appointment: "Adjutant, Overwatch Training Command",
-        joinDate: "2026",
-        note: ""
-    },
-
-    ipsum: {
-        name: "N/A",
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-0104",
-        status: "active",
-        unit: "Training Command",
-        appointment: "Adjutant, Officers Training Academy",
-        joinDate: "2026",
-        note: ""
-    },
-
-    ary: {
-        name: 'COL. "Border"',
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-0110",
-        status: "active",
-        unit: "Training Command",
-        appointment: "Instructor",
-        joinDate: "2026",
-        note: ""
-    },
-
-    raine: {
-        name: 'COL. "Fuego"',
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-0111",
-        status: "active",
-        unit: "Training Command",
-        appointment: "Instructor",
-        joinDate: "2026",
-        note: ""
-    },
-
-    caleb: {
-        name: "",
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-0112",
-        status: "active",
-        unit: "Training Command",
-        appointment: "Instructor",
-        joinDate: "2026",
-        note: ""
-    },
-
-
-    /* =====================================================
-       RECRUITMENT COMMAND
-    ===================================================== */
-
-    max: {
-        name: 'COL. "Maverick"',
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "-",
-        status: "active",
-        unit: "Recruitment Command",
-        appointment: "Recruiter",
-        joinDate: "2026",
-        note: ""
-    },
-
-    lewes: {
-        name: 'CPT. "Dark"',
-        rank: "—",
-        callsign: "—",
-        serviceNumber: "KSOL-0202",
-        status: "active",
-        unit: "Recruitment Command",
-        appointment: "Recruiter",
-        joinDate: "2026",
-        note: ""
-    },
-
-    freddie: {
-        name: "LTG. \"Fuego\"",
-        rank: "COL",
-        callsign: "Fuego",
-        serviceNumber: "KSOL-0203",
-        status: "active",
-        unit: "Recruitment Command",
-        appointment: "Recruiter",
-        joinDate: "2026",
-        note: ""
-    },
-
-
-    /* =====================================================
-       PARACHUTE REGIMENT
-    ===================================================== */
-
-    vex: {
-        name: 'COL. "Vex"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "KSOL-0301",
-        status: "active",
-
-        /*
-            Vex belongs to 7 PARA.
-
-            However, his appointment is:
-
-                CO, Parachute Regiment
-        */
-
-        unit: "7 PARA",
-        appointment: "CO, Parachute Regiment",
-
-        joinDate: "2026",
-        note: "Regimental Commanding Officer; assigned to 7 PARA."
-    },
-
-
-    /* =====================================================
-       7 PARA BATTALION
-    ===================================================== */
-
-    vexa: {
-        name: 'LTC. "Diabeto"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "KSOL-0302",
-        status: "active",
-        unit: "7 PARA",
-        appointment: "CO, 7 Para Bn",
-        joinDate: "2026",
-        note: ""
-    },
-
-    dark: {
-        name: 'CPT. "Dark"',
-        rank: "MAJ",
-        callsign: "—",
-        serviceNumber: "KSOL-0303",
-        status: "active",
-        unit: "7 PARA",
-        appointment: "Alpha Coy Cdr",
-        joinDate: "2026",
-        note: ""
-    },
-
-    bravo: {
-        name: '2LT. "Max"',
-        rank: "2LT",
-        callsign: "—",
-        serviceNumber: "KSOL-0304",
-        status: "active",
-        unit: "7 PARA",
-        appointment: "1st Platoon Cdr",
-        joinDate: "2026",
-        note: ""
-    },
-
-    border: {
-        name: 'SSG. "Slowed"',
-        rank: "SSG",
-        callsign: "—",
-        serviceNumber: "KSOL-0305",
-        status: "active",
-        unit: "7 PARA",
-        appointment: "1st Squad Leader",
-        joinDate: "2026",
-        note: "Operational element — 9 personnel including Squad Leader."
-    },
-
-    x: {
-        name: 'SGT. "Jordan',
-        rank: "SSG",
-        callsign: "—",
-        serviceNumber: "KSOL-0306",
-        status: "active",
-        unit: "7 PARA",
-        appointment: "2nd Squad Leader",
-        joinDate: "2026",
-        note: ""
-    },
-
-    y: {
-        name: "N/A",
-        rank: "SSG",
-        callsign: "—",
-        serviceNumber: "KSOL-0307",
-        status: "active",
-        unit: "7 PARA",
-        appointment: "3rd Squad Leader",
-        joinDate: "2026",
-        note: ""
-    },
-
-
-    /* =====================================================
-       OTHER UNITS
-    ===================================================== */
-
-    z: {
-        name: 'COL. "Shelby"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "KSOL-0401",
-        status: "active",
-        unit: "SIS",
-        appointment: "CO, Special Insertion Service",
-        joinDate: "2026",
-        note: ""
-    },
-
-    a: {
-        name: 'COL. "Enoch"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "KSOL-0501",
-        status: "active",
-        unit: "AAC",
-        appointment: "CO, Army Aviation Corps",
-        joinDate: "2026",
-        note: ""
-    },
-
-    b: {
-        name: 'COL. "Rook"',
-        rank: "COL",
-        callsign: "Rook",
-        serviceNumber: "KSOL-0601",
-        status: "active",
-        unit: "AMC",
-        appointment: "CO, Army Medical Corps",
-        joinDate: "2026",
-        note: ""
-    },
-
-    c: {
-        name: 'COL. "NaCl"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "KSOL-0701",
-        status: "active",
-        unit: "RECON",
-        appointment: "CO, Recon Group",
-        joinDate: "2026",
-        note: ""
-    },
-
-    e: {
-        name: 'COL. "Maverick"',
-        rank: "COL",
-        callsign: "—",
-        serviceNumber: "KSOL-0801",
-        status: "active",
-        unit: "ASC",
-        appointment: "CO, Army Service Corps",
-        joinDate: "2026",
-        note: ""
+  function detailMarkup() {
+    const panel = $("#details");
+    if (!selected) {
+      panel.innerHTML = `<div class="detail-empty"><span class="detail-seal">ISOC</span><small>COMMAND DIRECTORY</small><h2>Select an<br>organization node</h2><p>Appointment, incumbent, reporting line and duties will be displayed here.</p></div>`;
+      return;
     }
-,
-
-
-    /* =====================================================
-       ADDITIONAL PERSONNEL — ADDED ROSTER RECORDS
-    ===================================================== */
-
-    // paraReg01: { name: 'MAJ. "Hawk"', rank: "MAJ", callsign: "—", serviceNumber: "KSOL-0310", status: "active", unit: "Parachute Regiment", appointment: "Regimental Staff", joinDate: "2026", note: "" },
-    // paraReg02: { name: 'CPT. "Raven"', rank: "CPT", callsign: "—", serviceNumber: "KSOL-0311", status: "active", unit: "Parachute Regiment", appointment: "Regimental Staff", joinDate: "2026", note: "" },
-    // paraReg03: { name: 'WO1. "Atlas"', rank: "WO1", callsign: "—", serviceNumber: "KSOL-0312", status: "active", unit: "Parachute Regiment", appointment: "Regimental Staff", joinDate: "2026", note: "" },
-
-    // para7_01: { name: 'MAJ. "Stone"', rank: "MAJ", callsign: "—", serviceNumber: "KSOL-0313", status: "active", unit: "7 PARA", appointment: "Battalion Staff", joinDate: "2026", note: "" },
-    // para7_02: { name: 'SSG. "Rook"', rank: "SSG", callsign: "—", serviceNumber: "KSOL-0314", status: "active", unit: "7 PARA", appointment: "Battalion Staff", joinDate: "2026", note: "" },
-    // para7_03: { name: 'SGT. "Nomad"', rank: "SGT", callsign: "—", serviceNumber: "KSOL-0315", status: "active", unit: "7 PARA", appointment: "Battalion Staff", joinDate: "2026", note: "" },
-
-    // alpha01: { name: 'CPL. "Viper"', rank: "CPL", callsign: "—", serviceNumber: "KSOL-0316", status: "active", unit: "7 PARA", appointment: "Alpha Coy", joinDate: "2026", note: "" },
-    // alpha02: { name: 'LCPL. "Raptor"', rank: "LCPL", callsign: "—", serviceNumber: "KSOL-0317", status: "active", unit: "7 PARA", appointment: "Alpha Coy", joinDate: "2026", note: "" },
-    // alpha03: { name: 'PTE. "Ghost"', rank: "PTE", callsign: "—", serviceNumber: "KSOL-0318", status: "active", unit: "7 PARA", appointment: "Alpha Coy", joinDate: "2026", note: "" },
-
-    platoon1_01: { name: '"Border"', rank: "COL", callsign: "Border", serviceNumber: "KS-2602", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "09 Aug 2026", note: "" },
-    platoon1_02: { name: '"Golden"', rank: "COL", callsign: "Golden", serviceNumber: "KS-2617", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "26 Jul 2026", note: "" },
-    platoon1_03: { name: '"Coolguy"', rank: "LGN", callsign: "Coolguy", serviceNumber: "KS-2627", status: "inactive", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "21 Jul 2026", note: "" },
-    platoon1_04: { name: '"Cats"', rank: "LGN", callsign: "Cats", serviceNumber: "KS-2628", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "10 Aug 2026", note: "" },
-    platoon1_05: { name: '"Templar"', rank: "LGN", callsign: "Templar", serviceNumber: "KS-2632", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "13 Aug 2026", note: "" },
-    platoon1_06: { name: '"Rysea"', rank: "LGN", callsign: "Rysea", serviceNumber: "KS-2634", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "02 Sep 2026", note: "" },
-    platoon1_07: { name: '"Sansi"', rank: "LGN", callsign: "Sansi", serviceNumber: "KS-2620", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "31 Aug 2026", note: "" },
-    platoon1_08: { name: '"Hotdog"', rank: "LGN", callsign: "Hotdog", serviceNumber: "KS-2633", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "09 Aug 2026", note: "" },
-    platoon1_09: { name: '"Fallen"', rank: "LGN", callsign: "Fallen", serviceNumber: "KS-2610", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "10 Aug 2026", note: "" },
-    platoon1_10: { name: '"Diamond"', rank: "LGN", callsign: "Diamond", serviceNumber: "KS-2637", status: "active", unit: "7th PARA BN", appointment: "1st Platoon", joinDate: "19 Sep 2026", note: "" },
-
-
-    // bravo01: { name: 'CPT. "Archer"', rank: "CPT", callsign: "—", serviceNumber: "KSOL-0322", status: "active", unit: "7 PARA", appointment: "Bravo Coy", joinDate: "2026", note: "" },
-    // bravo02: { name: 'SGT. "Kodiak"', rank: "SGT", callsign: "—", serviceNumber: "KSOL-0323", status: "active", unit: "7 PARA", appointment: "Bravo Coy", joinDate: "2026", note: "" },
-    // bravo03: { name: 'PTE. "Ranger"', rank: "PTE", callsign: "—", serviceNumber: "KSOL-0324", status: "active", unit: "7 PARA", appointment: "Bravo Coy", joinDate: "2026", note: "" },
-
-    sis01: { name: '"Wolf"', rank: "LTG", callsign: "Wolf", serviceNumber: "KS-2611", status: "loa", unit: "SIS", appointment: "Operator", joinDate: "29 Jul 2026", note: "" },
-    sis02: { name: '"Obi"', rank: "GEN", callsign: "Obi", serviceNumber: "KSOL-2601", status: "active", unit: "SIS", appointment: "Commander, KSOL", joinDate: "16 Jul 2026", note: "" },
-    sis03: { name: '"Lucifer"', rank: "LGN", callsign: "Lucifer", serviceNumber: "KSOL-2638", status: "active", unit: "SIS", appointment: "Operator", joinDate: "20 Sep 2026", note: "" },
-
-    aac01: { name: '"Hitman"', rank: "LGN", callsign: "Hitman", serviceNumber: "KS-2607", status: "active", unit: "AAC", appointment: "Pilot", joinDate: "16 Aug2026", note: "" },
-    aac02: { name: '"Bravo 0-6"', rank: "LGN", callsign: "Bravo 0-6", serviceNumber: "KS-2626", status: "active", unit: "AAC", appointment: "-", joinDate: "02 Aug 2026", note: "" },
-    aac03: { name: '"Spade"', rank: "LGN", callsign: "Spade", serviceNumber: "KSOL-2635", status: "active", unit: "AAC", appointment: "Aircrew", joinDate: "18 Sep 2026", note: "" },
-
-    amc01: { name: '"Warthog"', rank: "PFC", callsign: "Warthog", serviceNumber: "KS-2608", status: "active", unit: "AMC", appointment: "Medic", joinDate: "09 Aug 2026", note: "" },
-    amc02: { name: '"Felon"', rank: "LGN", callsign: "Felon", serviceNumber: "KS-2624", status: "active", unit: "AMC", appointment: "Medic", joinDate: "22 Aug 2026", note: "" },
-    amc03: { name: '"Aika"', rank: "LGN", callsign: "Aika", serviceNumber: "KSOL-2639", status: "active", unit: "AMC", appointment: "Medic", joinDate: "21 Sep 2026", note: "" },
-
-    recon01: { name: '"Leviathan"', rank: "LGN", callsign: "Leviathan", serviceNumber: "KS-2619", status: "active", unit: "RECON", appointment: "Marksman", joinDate: "04 Aug 2026", note: "" },
-    recon02: { name: '"Silentdeath"', rank: "LGN", callsign: "Silentdeath", serviceNumber: "KS-2621", status: "active", unit: "RECON", appointment: "Marksman", joinDate: "10 Sep 2026", note: "" },
-    recon03: { name: '"Councillor Jasko"', rank: "COL", callsign: "Councillor Jasko", serviceNumber: "KS-2618", status: "active", unit: "RECON", appointment: "Marksman", joinDate: "08 Aug 2026", note: "" },
-    recon04: { name: '"Albert"', rank: "LGN", callsign: "Albert", serviceNumber: "KS-2622", status: "active", unit: "RECON", appointment: "Marksman", joinDate: "02 Sep 2026", note: "" },
-    recon05: { name: '"Newmate"', rank: "LGN", callsign: "Newmate", serviceNumber: "KS-2623", status: "active", unit: "RECON", appointment: "Marksman", joinDate: "05 Sep 2026", note: "" },
-    recon06: { name: '"VelvetVampire"', rank: "LGN", callsign: "VelvetVampire", serviceNumber: "KS-2631", status: "active", unit: "RECON", appointment: "Marksman", joinDate: "14 Sep 2026", note: "" },
-
-    asc01: { name: '"Fuego"', rank: "COL", callsign: "Fuego", serviceNumber: "KS-2625", status: "active", unit: "ASC", appointment: "-", joinDate: "03 Aug 2026", note: "" },
-    asc02: { name: '"Dachi"', rank: "LGN", callsign: "Dachi", serviceNumber: "KS-2629", status: "active", unit: "ASC", appointment: "-", joinDate: "02 Sep 2026", note: "" },
-    asc03: { name: '"Xx"', rank: "LGN", callsign: "Xx", serviceNumber: "KS-2630", status: "active", unit: "ASC", appointment: "-", joinDate: "09 Aug 2026", note: "" },
-
-    trail01: {name: 'GEN. "Obi"', rank: "GEN", callsign: "Obi", serviceNumber: "KS-2601", status: "active", unit: "SIS", appointment: "Commander, KSOL", joinDate: "N/A"},
-    trail02: {name: 'COL. "Border"', rank: "COL", callsign: "Obi", serviceNumber: "KS-2602", status: "active", unit: "7th PARA BN", appointment: "DG Internal Affairs", joinDate: "N/A"},
-    trail03: {name: 'CPT. "Dark"', rank: "CPT", callsign: "Dark", serviceNumber: "KS-2605", status: "active", unit: "7th PARA BN", appointment: "Alpha Company Commander", joinDate: "N/A"},
-
-    rge01: {name: 'COL. "NaCl"', rank: "CPT", callsign: "Dark", serviceNumber: "KS-2605", status: "active", unit: "7th PARA BN", appointment: "Alpha Company Commander", joinDate: "N/A"},
-    rge02: {name: 'COL. "Enoch"', rank: "CPT", callsign: "Dark", serviceNumber: "KS-2605", status: "active", unit: "7th PARA BN", appointment: "Alpha Company Commander", joinDate: "N/A"},
-    rge01: {name: 'LGN. "Spade"', rank: "CPT", callsign: "Dark", serviceNumber: "KS-2605", status: "active", unit: "7th PARA BN", appointment: "Alpha Company Commander", joinDate: "N/A"},
-
-    content01: {name: 'COL. "Fuego"', rank: "CPT", callsign: "Dark", serviceNumber: "KS-2605", status: "active", unit: "7th PARA BN", appointment: "Alpha Company Commander", joinDate: "N/A"},
-
-};
-
-
-/* =========================================================
-   ORGANIZATIONAL STRUCTURE
-   =========================================================
-
-   TYPES:
-
-       category
-       directorate
-       unit
-       appointment
-
-
-   UNIT STRUCTURE:
-
-       unit
-       ├── command
-       ├── children
-       └── personnel
-
-
-   This makes the roster future-proof.
-
-   Example:
-
-       Parachute Regiment
-       ├── CO, Parachute Regiment
-       │
-       ├── 7 Para Bn
-       │   ├── CO, 7 Para Bn
-       │   ├── Alpha Coy
-       │   │   ├── Alpha Coy Cdr
-       │   │   ├── 1st Platoon
-       │   │   │   ├── 1st Platoon Cdr
-       │   │   │   ├── 1st Squad Leader
-       │   │   │   ├── 2nd Squad Leader
-       │   │   │   └── 3rd Squad Leader
-       │   │   └── 2nd Platoon
-       │   │       ├── 1st Squad Leader
-       │   │       ├── 2nd Squad Leader
-       │   │       └── 3rd Squad Leader
-       │   └── Bravo Coy
-       │
-       └── 12 Para Bn
-           ...
-*/
-
-
-const roster = [
-
-    /* =====================================================
-       HQ
-    ===================================================== */
-
-    {
-        type: "category",
-        title: "HQ",
-
-        children: [
-
-            {
-                type: "appointment",
-                title: "Commander, KSOL",
-                personnel: ["obi"]
-            },
-
-            {
-                type: "appointment",
-                title: "2i/c, KSOL",
-                personnel: ["wolf"]
-            }
-
-        ]
-    },
-
-
-    /* =====================================================
-       DIRECTORATES
-    ===================================================== */
-
-    {
-        type: "category",
-        title: "Directorates",
-
-        children: [
-
-            /* =============================================
-               TRAINING COMMAND
-            ============================================= */
-
-            {
-                type: "directorate",
-                title: "Training Command",
-
-                children: [
-
-                    {
-                        type: "appointment",
-                        title: "Director General, Training Command",
-                        personnel: ["dgTraining"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Adjutant, Military Training Command",
-                        personnel: ["john"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Adjutant, Aerial Training Command",
-                        personnel: ["doe"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Adjutant, Overwatch Training Command",
-                        personnel: ["lorem"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Adjutant, Officers Training Academy",
-                        personnel: ["ipsum"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Instructors",
-                        personnel: [
-                            "ary",
-                            "raine",
-                            "caleb"
-                        ]
-                    }
-
-                ]
-            },
-
-
-            /* =============================================
-               RECRUITMENT COMMAND
-            ============================================= */
-
-            {
-                type: "directorate",
-                title: "Recruitment Command",
-
-                children: [
-
-                    {
-                        type: "appointment",
-                        title: "Director General, Recruitment Command",
-                        personnel: ["dgRecruitment"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Recruiters",
-                        personnel: [
-                            "max",
-                            "lewes",
-                            "freddie"
-                        ]
-                    }
-
-                ]
-            },
-
-
-            /* =============================================
-               MILITARY OPERATIONS
-            ============================================= */
-
-            {
-                type: "directorate",
-                title: "Military Operations",
-
-                children: [
-
-                    {
-                        type: "appointment",
-                        title: "Director General, Military Operations",
-                        personnel: ["dgOperations"]
-                    },
-
-
-                    /* =====================================
-                       PARACHUTE REGIMENT
-                    ===================================== */
-
-                    {
-                        type: "unit",
-
-                        id: "para",
-
-                        title: "Parachute Regiment",
-
-                        abbreviation: "PARA REGT",
-
-
-                        /*
-                            REGIMENTAL COMMAND
-
-                            This is an appointment.
-
-                            It is NOT the parent of 7 Para Bn.
-                        */
-
-                        command: {
-
-                            type: "appointment",
-
-                            title: "CO, Parachute Regiment",
-
-                            personnel: [
-                                "vex"
-                            ]
-
-                        },
-
-
-                        /*
-                            REGIMENTAL SUBORDINATE UNITS
-
-                            Battalions go here.
-
-                            7 PARA is currently the only battalion.
-
-                            12 PARA is deliberately NOT included yet.
-                        */
-
-                        children: [
-
-                            /* =================================
-                               7 PARA BATTALION
-                            ================================= */
-
-                            {
-                                type: "unit",
-
-                                id: "para7",
-
-                                title: "7 Para Bn",
-
-                                abbreviation: "7 PARA",
-
-
-                                /* -----------------------------
-                                   BATTALION COMMAND
-                                ----------------------------- */
-
-                                command: {
-
-                                    type: "appointment",
-
-                                    title: "CO, 7 Para Bn",
-
-                                    personnel: [
-                                        "vexa"
-                                    ]
-
-                                },
-
-
-                                /* -----------------------------
-                                   COMPANIES
-                                ----------------------------- */
-
-                                children: [
-
-                                    /* =============================
-                                       ALPHA COMPANY
-                                    ============================= */
-
-                                    {
-                                        type: "unit",
-
-                                        id: "alpha",
-
-                                        title: "Alpha Coy",
-
-                                        abbreviation: "ALPHA",
-
-
-                                        command: {
-
-                                            type: "appointment",
-
-                                            title: "Alpha Coy Cdr",
-
-                                            personnel: [
-                                                "dark"
-                                            ]
-
-                                        },
-
-
-                                        children: [
-
-                                            /* =========================
-                                               1ST PLATOON
-                                            ========================= */
-
-                                            {
-                                                type: "unit",
-
-                                                id: "platoon1",
-
-                                                title: "1st Platoon",
-
-                                                abbreviation: "1 PL",
-
-
-                                                command: {
-
-                                                    type: "appointment",
-
-                                                    title: "1st Platoon Cdr",
-
-                                                    personnel: [
-                                                        "bravo"
-                                                    ]
-
-                                                },
-
-
-                                                children: [
-
-                                                    {
-                                                        type: "appointment",
-
-                                                        title: "1st Squad Leader",
-
-                                                        personnel: [
-                                                            "border"
-                                                        ]
-
-                                                    },
-
-                                                    {
-                                                        type: "appointment",
-
-                                                        title: "2nd Squad Leader",
-
-                                                        personnel: [
-                                                            "x"
-                                                        ]
-
-                                                    },
-
-                                                    {
-                                                        type: "appointment",
-
-                                                        title: "3rd Squad Leader",
-
-                                                        personnel: [
-                                                            "y"
-                                                        ]
-
-                                                    }
-
-                                                ],
-
-
-                                                /*
-                                                    PERSONNEL DIRECTLY
-                                                    ASSIGNED TO 1ST PLATOON.
-
-                                                    These are NOT holding
-                                                    one of the appointments
-                                                    above.
-
-                                                    Add them here later:
-
-                                                        personnel: [
-                                                            "person1",
-                                                            "person2"
-                                                        ]
-                                                */
-
-                                                personnel: ["platoon1_01", "platoon1_02", "platoon1_03", "platoon1_04", "platoon1_05", "platoon1_06" ,"platoon1_07", "platoon1_08", "platoon1_09", "platoon1_10"]
-
-                                            },
-
-
-                                                                                        /* 2ND PLATOON — HIDDEN FOR NOW */
-
-
-
-                                        ],
-
-
-                                        /*
-                                            Personnel directly assigned
-                                            to Alpha Company.
-                                        */
-
-                                        personnel: ["alpha01", "alpha02", "alpha03"]
-
-                                    },
-
-
-                                    /* =============================
-                                       BRAVO COMPANY
-                                    ============================= */
-
-                                    {
-                                        type: "unit",
-
-                                        id: "bravo",
-
-                                        title: "Bravo Coy",
-
-                                        abbreviation: "BRAVO",
-
-                                        command: null,
-
-                                        children: [],
-
-                                        personnel: ["bravo01", "bravo02", "bravo03"]
-
-                                    }
-
-                                ],
-
-
-                                /*
-                                    Personnel directly assigned to
-                                    7 Para Bn but not placed in a
-                                    subordinate company.
-                                */
-
-                                personnel: ["para7_01", "para7_02", "para7_03"]
-
-                            }
-
-                            /*
-                                =================================================
-                                FUTURE 12 PARA BN
-                                =================================================
-
-                                When you want to add 12 Para Bn, put it HERE,
-                                beside para7.
-
-                                Example:
-
-                                {
-                                    type: "unit",
-
-                                    id: "para12",
-
-                                    title: "12 Para Bn",
-
-                                    abbreviation: "12 PARA",
-
-                                    command: {
-                                        type: "appointment",
-                                        title: "CO, 12 Para Bn",
-                                        personnel: []
-                                    },
-
-                                    children: [
-                                        ...
-                                    ],
-
-                                    personnel: []
-                                }
-
-                                This means:
-
-                                Parachute Regiment
-                                ├── CO, Parachute Regiment
-                                ├── 7 Para Bn
-                                └── 12 Para Bn
-
-                                NOT:
-
-                                Parachute Regiment
-                                └── CO, Parachute Regiment
-                                    └── 12 Para Bn
-                            */
-                        ],
-
-
-                        /*
-                            Personnel directly assigned to the
-                            Parachute Regiment itself.
-
-                            Currently none.
-                        */
-
-                        personnel: ["paraReg01", "paraReg02", "paraReg03"]
-
-                    },
-
-
-                    /* =====================================
-                       SPECIAL INSERTION SERVICE
-                    ===================================== */
-
-                    {
-                        type: "unit",
-
-                        id: "sis",
-
-                        title: "Special Insertion Service",
-
-                        abbreviation: "SIS",
-
-                        command: {
-
-                            type: "appointment",
-
-                            title: "CO, Special Insertion Service",
-
-                            personnel: ["z"]
-
-                        },
-
-                        children: [],
-
-                        personnel: ["sis01", "sis02", "sis03", "sis04"]
-
-                    },
-
-
-                    /* =====================================
-                       ARMY AVIATION CORPS
-                    ===================================== */
-
-                    {
-                        type: "unit",
-
-                        id: "aac",
-
-                        title: "Army Aviation Corps",
-
-                        abbreviation: "AAC",
-
-                        command: {
-
-                            type: "appointment",
-
-                            title: "CO, Army Aviation Corps",
-
-                            personnel: ["a"]
-
-                        },
-
-                        children: [],
-
-                        personnel: ["aac01", "aac02", "aac03"]
-
-                    },
-
-
-                    /* =====================================
-                       ARMY MEDICAL CORPS
-                    ===================================== */
-
-                    {
-                        type: "unit",
-
-                        id: "amc",
-
-                        title: "Army Medical Corps",
-
-                        abbreviation: "AMC",
-
-                        command: {
-
-                            type: "appointment",
-
-                            title: "CO, Army Medical Corps",
-
-                            personnel: ["b"]
-
-                        },
-
-                        children: [],
-
-                        personnel: ["amc01", "amc02", "amc03"]
-
-                    },
-
-
-                    /* =====================================
-                       RECON
-                    ===================================== */
-
-                    {
-                        type: "unit",
-
-                        id: "recon",
-
-                        title: "Recon Group",
-
-                        abbreviation: "RECON",
-
-                        command: {
-
-                            type: "appointment",
-
-                            title: "CO, Recon Group",
-
-                            personnel: ["c"]
-
-                        },
-
-                        children: [],
-
-                        personnel: ["recon01", "recon02", "recon03", "recon04", "recon05", "recon06"]
-
-                    },
-
-
-                    /* =====================================
-                       ARMY SERVICE CORPS
-                    ===================================== */
-
-                    {
-                        type: "unit",
-
-                        id: "asc",
-
-                        title: "Army Service Corps",
-
-                        abbreviation: "ASC",
-
-                        command: {
-
-                            type: "appointment",
-
-                            title: "CO, Army Service Corps",
-
-                            personnel: ["e"]
-
-                        },
-
-                        children: [],
-
-                        personnel: ["asc01", "asc02", "asc03"]
-
-                    }
-
-                ]
-            },
-
-
-            /* =============================================
-               INTERNAL AFFAIRS
-            ============================================= */
-
-            {
-                type: "directorate",
-                title: "Internal Affairs",
-
-                children: [
-
-                    {
-                        type: "appointment",
-                        title: "Director General, Internal Affairs",
-                        personnel: ["dgInternal"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Trial Jury",
-                        personnel: ["trail01", "trail02", "trail03"]
-                    }
-
-                ]
-            },
-
-
-            /* =============================================
-               PUBLIC RELATIONS
-            ============================================= */
-
-            {
-                type: "directorate",
-                title: "Public Relations",
-
-                children: [
-
-                    {
-                        type: "appointment",
-                        title: "Director General, Public Relations",
-                        personnel: ["dgPublicRelations"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "RGE Team",
-                        personnel: ["rge01", "rge02", "rge03"]
-                    },
-
-                    {
-                        type: "appointment",
-                        title: "Content Team",
-                        personnel: ["content01"]
-                    }
-
-                ]
-            },
-
-
-            /* =============================================
-               ADMINISTRATIVE DUTIES
-            ============================================= */
-
-            {
-                type: "directorate",
-                title: "Administrative Duties",
-
-                children: [
-
-                    {
-                        type: "appointment",
-                        title: "Director General, Administrative Duties",
-                        personnel: ["dgAdministrative"]
-                    }
-
-                ]
-            }
-
-        ]
+    const a = getAppointment(selected);
+    const u = getUnit(selected);
+    const assignedPeople = a ? incumbents(a) : [];
+    if (!a && !u && selected !== "hq-appointments") {
+      const member = getPerson(selected);
+      if (!member) { selected = null; detailMarkup(); return; }
+      panel.innerHTML = `<div class="detail-kicker">PERSONNEL RECORD</div><h2 class="detail-title">${esc(member.name)}</h2><div class="detail-subtitle">${esc(member.rank)} / ${esc(getUnit(member.unitId)?.name || "UNASSIGNED")}</div><div class="detail-rule"></div><div class="detail-label">CALLSIGN</div><div class="detail-value">${esc(member.callsign || "—")}</div><div class="detail-label">STATUS</div><div class="detail-value">${esc(member.status || "ACTIVE")}</div><div class="detail-label">DUTIES / NOTES</div><div class="detail-description">${esc(member.duties || "No additional notes recorded.")}</div><div class="detail-actions"><button data-edit-person="${esc(member.id)}">EDIT PERSONNEL</button></div>`;
+      return;
     }
-
-];
-
-
-/* =========================================================
-   STATE
-========================================================= */
-
-let currentSearch = "";
-let currentStatus = "all";
-
-
-/* =========================================================
-   PERSON SEARCH
-========================================================= */
-
-function personText(person) {
-
-    return [
-        person.name,
-        person.rank,
-        person.callsign,
-        person.serviceNumber,
-        person.status,
-        person.unit,
-        person.appointment,
-        person.joinDate,
-        person.note
-    ]
-        .filter(Boolean)
-        .join(" ")
-        .toLowerCase();
-
-}
-
-
-function matchesPerson(id) {
-
-    const person = personnel[id];
-
-    if (!person) {
-        return false;
+    if (selected === "hq-appointments") {
+      panel.innerHTML = `<div class="detail-kicker">HEADQUARTERS ELEMENT</div><h2 class="detail-title">ISOC HQ</h2><div class="detail-subtitle">COMMAND APPOINTMENTS</div><div class="detail-rule"></div><div class="detail-label">APPOINTMENTS</div><div class="detail-value">${hqList()}</div><div class="detail-actions"><button data-edit-tab="appointments">MANAGE APPOINTMENTS</button></div>`;
+      return;
     }
-
-
-    /*
-        Status filter.
-    */
-
-    if (
-        currentStatus !== "all" &&
-        person.status !== currentStatus
-    ) {
-        return false;
-    }
-
-
-    /*
-        Search filter.
-    */
-
-    return (
-        !currentSearch ||
-        personText(person).includes(currentSearch)
-    );
-
-}
-
-
-/* =========================================================
-   TREE SEARCH
-========================================================= */
-
-function nodeContainsVisiblePerson(node) {
-
-    if (!node) {
-        return false;
-    }
-
-
-    if (
-        (node.personnel || [])
-            .some(matchesPerson)
-    ) {
-        return true;
-    }
-
-
-    if (
-        node.command &&
-        (node.command.personnel || [])
-            .some(matchesPerson)
-    ) {
-        return true;
-    }
-
-
-    return (
-        node.children || []
-    ).some(nodeContainsVisiblePerson);
-
-}
-
-
-/*
-    A node remains visible if:
-
-        - no filter is active
-        - its own title matches
-        - its own personnel matches
-        - its command personnel matches
-        - one of its children matches
-*/
-
-function nodeMatchesSearch(node) {
-
-    if (!node) {
-        return false;
-    }
-
-
-    if (
-        !currentSearch &&
-        currentStatus === "all"
-    ) {
-        return true;
-    }
-
-
-    const title =
-        (node.title || "")
-            .toLowerCase();
-
-
-    if (
-        currentSearch &&
-        title.includes(currentSearch)
-    ) {
-        return true;
-    }
-
-
-    return nodeContainsVisiblePerson(node);
-
-}
-
-
-/* =========================================================
-   PERSONNEL ENTRY
-========================================================= */
-
-function createPersonnelEntry(id) {
-
-    const person = personnel[id];
-
-    if (
-        !person ||
-        !matchesPerson(id)
-    ) {
-        return null;
-    }
-
-
-    const entry =
-        document.createElement("button");
-
-    entry.type = "button";
-
-    entry.className =
-        "personnel-entry";
-
-
-    entry.setAttribute(
-        "aria-label",
-        `Open personnel record for ${
-            person.name || "personnel"
-        }`
-    );
-
-
-    /* ---------------------------------------------
-       INDEX
-    --------------------------------------------- */
-
-    const index =
-        document.createElement("span");
-
-    index.className =
-        "personnel-index";
-
-    index.textContent =
-        "—";
-
-
-    /* ---------------------------------------------
-       RANK
-    --------------------------------------------- */
-
-    const rank =
-        document.createElement("span");
-
-    rank.className =
-        "personnel-rank";
-
-    rank.textContent =
-        person.rank || "—";
-
-
-    /* ---------------------------------------------
-       NAME
-    --------------------------------------------- */
-
-    const nameBlock =
-        document.createElement("div");
-
-    nameBlock.className =
-        "personnel-name-block";
-
-
-    const name =
-        document.createElement("div");
-
-    name.className =
-        "personnel-name";
-
-    name.textContent =
-        person.name || "—";
-
-
-    const callsign =
-        document.createElement("div");
-
-    callsign.className =
-        "personnel-callsign";
-
-    callsign.textContent =
-        person.callsign || "—";
-
-
-    nameBlock.append(
-        name,
-        callsign
-    );
-
-
-    /* ---------------------------------------------
-       APPOINTMENT
-    --------------------------------------------- */
-
-    const appointment =
-        document.createElement("div");
-
-    appointment.className =
-        "personnel-appointment";
-
-
-    const appointmentText =
-        document.createElement("span");
-
-    appointmentText.textContent =
-        person.appointment || "—";
-
-
-    appointment.appendChild(
-        appointmentText
-    );
-
-
-    /* ---------------------------------------------
-       STATUS
-    --------------------------------------------- */
-
-    const status =
-        document.createElement("span");
-
-    status.className =
-        `personnel-status ${
-            person.status || "inactive"
-        }`;
-
-    status.textContent =
-        (
-            person.status ||
-            "inactive"
-        ).toUpperCase();
-
-
-    /* ---------------------------------------------
-       COMPLETE ROW
-    --------------------------------------------- */
-
-    entry.append(
-        index,
-        rank,
-        nameBlock,
-        appointment,
-        status
-    );
-
-
-    entry.addEventListener(
-        "click",
-        () => openProfile(person)
-    );
-
-
-    return entry;
-
-}
-
-
-/* =========================================================
-   PERSONNEL LIST
-========================================================= */
-
-function renderPersonnelList(
-    ids,
-    container
-) {
-
-    if (
-        !ids ||
-        !ids.length
-    ) {
-        return null;
-    }
-
-
-    const list =
-        document.createElement("div");
-
-    list.className =
-        "personnel-list";
-
-
-    let count = 0;
-
-
-    ids.forEach(
-        id => {
-
-            const entry =
-                createPersonnelEntry(id);
-
-
-            if (!entry) {
-                return;
-            }
-
-
-            count++;
-
-
-            entry.querySelector(
-                ".personnel-index"
-            ).textContent =
-                String(count).padStart(2, "0");
-
-
-            list.appendChild(
-                entry
-            );
-
-        }
-    );
-
-
-    if (!count) {
-        return null;
-    }
-
-
-    container.appendChild(
-        list
-    );
-
-
-    return list;
-
-}
-
-
-/* =========================================================
-   COMMAND NODE
-========================================================= */
-
-function renderCommandNode(
-    node,
-    container,
-    depth = 0
-) {
-
-    if (
-        !node ||
-        !nodeMatchesSearch(node)
-    ) {
-        return;
-    }
-
-
-    const wrapper =
-        document.createElement("div");
-
-
-    wrapper.className =
-        [
-            "roster-node",
-            `roster-depth-${depth}`,
-            `roster-type-${node.type}`
-        ].join(" ");
-
-
-    /* ---------------------------------------------
-       HEADER
-    --------------------------------------------- */
-
-    const header =
-        document.createElement("div");
-
-    header.className =
-        "roster-node-header";
-
-
-    const title =
-        document.createElement("span");
-
-    title.className =
-        "roster-node-title";
-
-
-    /*
-        DG appointments are intentionally bold.
-    */
-
-    if (
-        node.title &&
-        node.title.startsWith(
-            "Director General"
-        )
-    ) {
-
-        const strong =
-            document.createElement("strong");
-
-        strong.className =
-            "roster-node-title";
-
-        strong.textContent =
-            node.title;
-
-        header.appendChild(
-            strong
-        );
-
+    const title = a ? a.title : u.name;
+    const type = a ? "COMMAND APPOINTMENT" : (u.id === "hq" ? "HEADQUARTERS" : u.category);
+    const parent = a?.parentId ? getAppointment(a.parentId) : null;
+    const assigned = u ? data.people.filter(x => x.unitId === u.id) : [];
+    const duties = a ? a.duties : u.description;
+    const incumbentValue = a ? displayIncumbents(a) : (u.id === "22sg" ? "PUBLIC DESIGNATION ONLY" : `${assigned.length} ASSIGNED PERSONNEL`);
+    panel.innerHTML = `
+      <div class="detail-kicker">${esc(type)}</div><h2 class="detail-title">${esc(title)}</h2><div class="detail-subtitle">${esc(a ? getUnit(a.unitId)?.name : (u.short || u.name))}</div>
+      <div class="detail-rule"></div><div class="detail-label">${a ? (assignedPeople.length > 1 ? "APPOINTMENT HOLDERS" : "CURRENT INCUMBENT") : "ELEMENT"}</div><div class="detail-value ${a && !assignedPeople.length ? "vacant" : ""}">${esc(incumbentValue)}</div>
+      ${assignedPeople.length ? `<div class="detail-label">${assignedPeople.length > 1 ? "APPOINTMENT HOLDERS" : "RANK / CALLSIGN"}</div>${assignedPeople.map(person => `<div class="detail-person"><strong>${esc(person.name)}</strong><span>${esc(person.rank || "—")} · ${esc(person.callsign || "—")}</span></div>`).join("")}` : ""}
+      ${parent ? `<div class="detail-label">REPORTS TO</div><div class="detail-value">${esc(parent.title)}</div>` : ""}
+      ${a && !parent ? `<div class="detail-label">REPORTING LEVEL</div><div class="detail-value">Unit command appointment</div>` : ""}
+      <div class="detail-label">DUTIES / REMIT</div><div class="detail-description">${esc(duties || "No duties have been entered.")}</div>
+      ${u && u.id !== "22sg" && u.id !== "hq" ? `<div class="detail-label">UNIT PERSONNEL</div>${assigned.map(x => `<div class="detail-person"><strong>${esc(x.name)}</strong><span>${esc(x.rank || "—")} · ${esc(x.callsign || "—")}</span></div>`).join("") || `<div class="detail-description">No personnel assigned.</div>`}` : ""}
+      ${a ? `<div class="detail-actions"><button data-edit-appointment="${esc(a.id)}">EDIT APPOINTMENT</button><button data-assign="${esc(a.id)}">MANAGE APPOINTMENT HOLDERS</button></div>` : `<div class="detail-actions"><button data-edit-unit="${esc(u.id)}">EDIT UNIT</button></div>`}`;
+  }
+
+  function hqList() {
+    return unitAppointments("hq").map(a => `<div style="padding:5px 0;border-bottom:1px solid #30363a">${esc(a.title)} <span style="color:#9aa3a8">— ${esc(displayIncumbents(a))}</span></div>`).join("");
+  }
+
+  function renderPersonnelIndex() {
+    const units = data.units.filter(u => u.id !== "hq");
+    $("#unit-rosters").innerHTML = units.map(u => {
+      const appointed = new Set(data.appointments.flatMap(a => a.personIds || (a.personId ? [a.personId] : [])));
+      const members = data.people.filter(p => p.unitId === u.id && !appointed.has(p.id));
+      const count = data.people.filter(p => p.unitId === u.id).length;
+      const restricted = u.id === "22sg" || u.category === "DESIGNATION ONLY";
+      return `<article class="roster-card"><div class="roster-card-head"><strong>${esc(u.name)} / ${esc(u.short)}</strong><span>${restricted ? "RESTRICTED" : `${String(count).padStart(2, "0")} PERSONNEL`}</span></div>${restricted ? `<div class="empty-note">Public designation only. No personnel details are published.</div>` : members.length ? members.map(p => `<div class="roster-person"><div><strong>${esc(p.name)}</strong><small>${esc(p.rank || "—")} · ${esc(p.callsign || "—")}</small></div><em>${esc(p.status || "ACTIVE")}</em></div>`).join("") : `<div class="empty-note">No additional personnel assigned.</div>`}</article>`;
+    }).join("");
+  }
+
+  function render() {
+    updateStats();
+    renderMap();
+    detailMarkup();
+    renderPersonnelIndex();
+  }
+
+  function openModal(tab = "people") {
+    activeTab = tab;
+    editingId = null;
+    $("#modal").hidden = false;
+    $$(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+    renderModal();
+  }
+
+  function closeModal() {
+    $("#modal").hidden = true;
+    editingId = null;
+  }
+
+  function setTab(tab) {
+    activeTab = tab;
+    editingId = null;
+    $$(".tab").forEach(btn => btn.classList.toggle("active", btn.dataset.tab === tab));
+    renderModal();
+  }
+
+  function options(items, selectedValue, label, allowBlank = true) {
+    return `${allowBlank ? `<option value="">— None / vacant —</option>` : ""}${items.map(item => `<option value="${esc(item.id)}" ${item.id === selectedValue ? "selected" : ""}>${esc(label(item))}</option>`).join("")}`;
+  }
+
+  function inputField(label, name, value = "", wide = false, type = "text") {
+    return `<label class="${wide ? "wide" : ""}">${label}<input type="${type}" name="${name}" value="${esc(value)}"></label>`;
+  }
+
+  function formMarkup() {
+    const editing = editingId && editingId !== "__new__";
+    const old = editing ? (activeTab === "people" ? getPerson(editingId) : activeTab === "units" ? getUnit(editingId) : getAppointment(editingId)) || {} : {};
+    let fields = "";
+    if (activeTab === "people") {
+      fields = `
+        ${inputField("FULL NAME", "name", old.name)}
+        ${inputField("RANK", "rank", old.rank)}
+        ${inputField("CALLSIGN / POSITION", "callsign", old.callsign)}
+        <label>ASSIGNED UNIT<select name="unitId">${options(data.units, old.unitId, u => `${u.name} — ${u.short}`, false)}</select></label>
+        <label>STATUS<select name="status">${["ACTIVE", "LOA", "RESERVE", "INACTIVE"].map(s => `<option ${old.status === s ? "selected" : ""}>${s}</option>`).join("")}</select></label>
+        ${inputField("SERVICE / MEMBER ID", "serviceNumber", old.serviceNumber)}
+        <label class="wide">DUTIES / NOTES<textarea name="duties">${esc(old.duties || "")}</textarea></label>`;
+    } else if (activeTab === "units") {
+      fields = `
+        ${inputField("UNIT NAME", "name", old.name)}
+        ${inputField("SHORT LABEL", "short", old.short)}
+        ${inputField("CATEGORY", "category", old.category)}
+        <label class="wide">DESCRIPTION<textarea name="description">${esc(old.description || "")}</textarea></label>`;
     } else {
+      const unitId = old.unitId || "sas";
+      const parentOptions = data.appointments.filter(a => a.id !== editingId && a.unitId === unitId);
+      fields = `
+        <label>UNIT<select name="unitId">${options(data.units.filter(u => u.id !== "22sg"), unitId, u => u.name, false)}</select></label>
+        <label>REPORTS TO<select name="parentId">${options(parentOptions, old.parentId, a => a.title, true)}</select></label>
+        ${inputField("APPOINTMENT TITLE", "title", old.title)}
+        <label class="wide">APPOINTMENT HOLDER(S)
+          <select name="personIds" multiple size="5" class="multi-incumbent-select">
+            ${data.people.filter(p => p.unitId === unitId || (old.personIds || (old.personId ? [old.personId] : [])).includes(p.id)).map(p => `<option value="${esc(p.id)}" ${(old.personIds || (old.personId ? [old.personId] : [])).includes(p.id) ? "selected" : ""}>${esc(p.rank || "—")} · ${esc(p.name)}</option>`).join("")}
+          </select>
+          <small class="form-help">Hold Ctrl (Windows/Linux) or Command (Mac) to select multiple people. Select exactly two people for Western, Central and Eastern Operations Command.</small>
+        </label>
+        ${inputField("DISPLAY ORDER", "order", old.order ?? 1, false, "number")}
+        <label class="wide">DUTIES / RESPONSIBILITIES<textarea name="duties">${esc(old.duties || "")}</textarea></label>
+        <p class="form-help wide">Reporting lines are defined by “Reports to”. Leave this blank for a unit's top command appointment. Select the unit first, then choose a parent in that same unit.</p>`;
+    }
+    return `<form id="record-form" class="form-panel"><h3>${editing ? "EDIT RECORD" : "CREATE NEW RECORD"}</h3><div class="form-grid">${fields}</div><div class="form-actions"><button type="button" data-cancel-form>CANCEL</button><button class="save" type="submit">SAVE RECORD</button></div></form>`;
+  }
 
-        title.textContent =
-            node.title || "—";
-
-        header.appendChild(
-            title
-        );
-
+  function renderModal() {
+    const content = $("#modal-content");
+    if (activeTab === "data") {
+      content.innerHTML = `
+        <div class="backup-grid">
+          <div class="backup-box"><h3>EXPORT UPDATED DATA</h3><p>Download the current in-browser edits as a ready-to-use JavaScript data file. Replace your existing roster-data.js with the downloaded file to make changes permanent in the website source.</p><button class="add-button" data-export-js>EXPORT JS DATA</button></div>
+          <div class="backup-box"><h3>EXPORT / IMPORT JSON</h3><p>JSON is useful for a portable backup or moving data between copies of the roster.</p><button class="add-button" data-export-json>DOWNLOAD JSON</button><p><input type="file" id="import-file" accept=".json,application/json"></p></div>
+          <div class="backup-box"><h3>IMPORTANT: HOW DATA IS SAVED</h3><p>This version does not use localStorage, cookies, a database or browser persistence. Changes remain in memory while this page is open. Export the JS data file before refreshing or closing the page.</p></div>
+          <div class="backup-box"><h3>RESTORE ORIGINAL DATA</h3><p>Discard current unsaved edits and reload the initial roster-data.js file.</p><button class="add-button" data-reset-data>RESTORE DEFAULT DATA</button></div>
+        </div>`;
+      return;
     }
 
-
-    /* ---------------------------------------------
-       PERSONNEL
-    --------------------------------------------- */
-
-    const visiblePeople =
-        (node.personnel || [])
-            .filter(matchesPerson);
-
-
-    if (
-        visiblePeople.length
-    ) {
-
-        const people =
-            document.createElement("span");
-
-        people.className =
-            "roster-node-personnel";
-
-
-        people.textContent =
-            `— ${
-                visiblePeople
-                    .map(
-                        id =>
-                            personnel[id]?.name ||
-                            "—"
-                    )
-                    .join(", ")
-            }`;
-
-
-        header.appendChild(
-            people
-        );
-
-    }
-
-
-    wrapper.appendChild(
-        header
-    );
-
-
-    /* ---------------------------------------------
-       NOTE
-    --------------------------------------------- */
-
-    if (node.note) {
-
-        const note =
-            document.createElement("div");
-
-        note.className =
-            "roster-node-note";
-
-        note.textContent =
-            node.note;
-
-        wrapper.appendChild(
-            note
-        );
-
-    }
-
-
-    /* ---------------------------------------------
-       CHILDREN
-    --------------------------------------------- */
-
-    const children =
-        (node.children || [])
-            .filter(nodeMatchesSearch);
-
-
-    if (
-        children.length
-    ) {
-
-        const childContainer =
-            document.createElement("div");
-
-        childContainer.className =
-            "roster-node-children";
-
-
-        children.forEach(
-            child => {
-
-                renderNode(
-                    child,
-                    childContainer,
-                    depth + 1
-                );
-
-            }
-        );
-
-
-        wrapper.appendChild(
-            childContainer
-        );
-
-    }
-
-
-    container.appendChild(
-        wrapper
-    );
-
-}
-
-
-/* =========================================================
-   GENERIC NODE
-========================================================= */
-
-function renderNode(
-    node,
-    container,
-    depth = 0
-) {
-
-    if (
-        !nodeMatchesSearch(node)
-    ) {
-        return;
-    }
-
-
-    /*
-        UNIT
-    */
-
-    if (
-        node.type === "unit"
-    ) {
-
-        renderUnit(
-            node,
-            container,
-            depth
-        );
-
-        return;
-    }
-
-
-    /*
-        CATEGORY / DIRECTORATE /
-        APPOINTMENT
-    */
-
-    const wrapper =
-        document.createElement("div");
-
-
-    wrapper.className =
-        [
-            "roster-node",
-            `roster-depth-${depth}`,
-            `roster-type-${node.type}`
-        ].join(" ");
-
-
-    /* ---------------------------------------------
-       HEADER
-    --------------------------------------------- */
-
-    const header =
-        document.createElement("div");
-
-    header.className =
-        "roster-node-header";
-
-
-    const title =
-        document.createElement("span");
-
-    title.className =
-        "roster-node-title";
-
-
-    /*
-        DG appointments are bold.
-    */
-
-    if (
-        node.title &&
-        node.title.startsWith(
-            "Director General"
-        )
-    ) {
-
-        const strong =
-            document.createElement("strong");
-
-        strong.className =
-            "roster-node-title";
-
-        strong.textContent =
-            node.title;
-
-        header.appendChild(
-            strong
-        );
-
+    const records = activeTab === "people" ? data.people : activeTab === "units" ? data.units : data.appointments;
+    const rows = records.map(item => {
+      const title = activeTab === "people" ? item.name : activeTab === "units" ? item.name : item.title;
+      const subtitle = activeTab === "people" ? `${item.rank || "—"} · ${getUnit(item.unitId)?.name || "No unit"}` : activeTab === "units" ? `${item.short || ""} · ${item.category || ""}` : `${getUnit(item.unitId)?.name || ""} · ${displayIncumbents(item)}`;
+      return `<div class="record-row"><div><strong>${esc(title || "Untitled record")}</strong><small>${esc(subtitle)}</small></div><div class="row-actions"><button data-edit-record="${esc(item.id)}">EDIT</button><button class="delete" data-delete-record="${esc(item.id)}">DELETE</button></div></div>`;
+    }).join("");
+    content.innerHTML = `<div class="list-toolbar"><p>${records.length} ${activeTab.toUpperCase()} RECORDS · EDITS ARE IN MEMORY UNTIL EXPORTED</p><button class="add-button" data-add-record>+ ADD ${activeTab === "people" ? "PERSONNEL" : activeTab === "units" ? "UNIT" : "APPOINTMENT"}</button></div><div class="record-list">${rows || `<div class="empty-note">No records in this category.</div>`}</div>${editingId ? formMarkup() : ""}`;
+  }
+
+  function saveRecord(event) {
+    event.preventDefault();
+    const formData = Object.fromEntries(new FormData(event.currentTarget).entries());
+    const isNew = !editingId || editingId === "__new__";
+    const id = isNew ? `${activeTab === "people" ? "p" : activeTab === "units" ? "u" : "a"}-${crypto.randomUUID()}` : editingId;
+
+    if (activeTab === "people") {
+      const record = { ...formData, id, name: formData.name.trim(), rank: formData.rank.trim(), callsign: formData.callsign.trim(), duties: formData.duties.trim() };
+      if (!record.name) return toast("A personnel name is required.");
+      upsert(data.people, record);
+    } else if (activeTab === "units") {
+      const record = { ...formData, id, name: formData.name.trim(), short: formData.short.trim(), category: formData.category.trim(), description: formData.description.trim() };
+      if (!record.name) return toast("A unit name is required.");
+      upsert(data.units, record);
     } else {
-
-        title.textContent =
-            node.title || "—";
-
-        header.appendChild(
-            title
-        );
-
+      const holderSelect = event.currentTarget.querySelector('[name="personIds"]');
+      const personIds = holderSelect ? [...holderSelect.selectedOptions].map(option => option.value) : [];
+      const record = { ...formData, id, parentId: formData.parentId || null, personIds, order: Number(formData.order) || 1, duties: formData.duties.trim() };
+      delete record.personId;
+      if (!record.title.trim()) return toast("An appointment title is required.");
+      if (["hq-west", "hq-central", "hq-east"].includes(id) && personIds.length !== 2) {
+        return toast("Assign exactly two people to each regional Operations Command appointment.");
+      }
+      if (record.parentId === id) return toast("An appointment cannot report to itself.");
+      if (wouldCreateCycle(id, record.parentId)) return toast("That reporting line would create a circular hierarchy.");
+      upsert(data.appointments, record);
     }
+    editingId = null;
+    render();
+    renderModal();
+    toast("Record updated in memory. Export JS data to keep it.");
+  }
 
+  function upsert(list, record) {
+    const index = list.findIndex(item => item.id === record.id);
+    if (index < 0) list.push(record); else list[index] = record;
+  }
 
-    /* ---------------------------------------------
-       PERSONNEL
-    --------------------------------------------- */
-
-    const visiblePeople =
-        (node.personnel || [])
-            .filter(matchesPerson);
-
-
-    if (
-        visiblePeople.length
-    ) {
-
-        const people =
-            document.createElement("span");
-
-        people.className =
-            "roster-node-personnel";
-
-
-        people.textContent =
-            `— ${
-                visiblePeople
-                    .map(
-                        id =>
-                            personnel[id]?.name ||
-                            "—"
-                    )
-                    .join(", ")
-            }`;
-
-
-        header.appendChild(
-            people
-        );
-
+  function wouldCreateCycle(id, parentId) {
+    let current = parentId;
+    const seen = new Set([id]);
+    while (current) {
+      if (seen.has(current)) return true;
+      seen.add(current);
+      current = getAppointment(current)?.parentId || null;
     }
+    return false;
+  }
 
-
-    wrapper.appendChild(
-        header
-    );
-
-
-    /* ---------------------------------------------
-       NOTE
-    --------------------------------------------- */
-
-    if (node.note) {
-
-        const note =
-            document.createElement("div");
-
-        note.className =
-            "roster-node-note";
-
-        note.textContent =
-            node.note;
-
-        wrapper.appendChild(
-            note
-        );
-
+  function deleteRecord(id) {
+    if (activeTab === "people") {
+      if (!confirm("Delete this personnel record? Any appointment held by this person will become vacant.")) return;
+      data.people = data.people.filter(p => p.id !== id);
+      data.appointments.forEach(a => { a.personIds = (a.personIds || (a.personId ? [a.personId] : [])).filter(personId => personId !== id); delete a.personId; });
+    } else if (activeTab === "units") {
+      if (data.appointments.some(a => a.unitId === id) || data.people.some(p => p.unitId === id)) return toast("Reassign or remove this unit's personnel and appointments first.");
+      if (!confirm("Delete this unit?")) return;
+      data.units = data.units.filter(u => u.id !== id);
+    } else {
+      const target = getAppointment(id);
+      if (!target) return;
+      if (!confirm("Delete this appointment and all subordinate appointments beneath it? Incumbents will remain in the personnel register.")) return;
+      const remove = new Set();
+      const collect = parentId => children(parentId).forEach(child => { remove.add(child.id); collect(child.id); });
+      collect(id);
+      remove.add(id);
+      data.appointments = data.appointments.filter(a => !remove.has(a.id));
     }
+    if (selected === id) selected = null;
+    render();
+    renderModal();
+    toast("Record deleted in memory. Export JS data to keep the change.");
+  }
 
+  function download(filename, content, type) {
+    const blob = new Blob([content], { type });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = filename;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    setTimeout(() => URL.revokeObjectURL(url), 1000);
+  }
 
-    /* ---------------------------------------------
-       CHILDREN
-    --------------------------------------------- */
+  function exportJS() {
+    const js = `/* ISOC COMMAND ROSTER DATA — replace roster-data.js with this file. */\nwindow.ISOC_ROSTER_DATA = ${JSON.stringify(data, null, 2)};\n`;
+    download("roster-data.js", js, "text/javascript;charset=utf-8");
+    toast("Updated roster-data.js downloaded.");
+  }
 
-    const children =
-        (node.children || [])
-            .filter(nodeMatchesSearch);
+  function exportJSON() {
+    download("isoc-roster-backup.json", JSON.stringify(data, null, 2), "application/json");
+    toast("JSON backup downloaded.");
+  }
 
-
-    if (
-        children.length
-    ) {
-
-        const childContainer =
-            document.createElement("div");
-
-        childContainer.className =
-            "roster-node-children";
-
-
-        children.forEach(
-            child => {
-
-                renderNode(
-                    child,
-                    childContainer,
-                    depth + 1
-                );
-
-            }
-        );
-
-
-        wrapper.appendChild(
-            childContainer
-        );
-
+  async function importJSON(file) {
+    try {
+      const parsed = JSON.parse(await file.text());
+      if (!Array.isArray(parsed.people) || !Array.isArray(parsed.units) || !Array.isArray(parsed.appointments)) throw new Error("Expected people, units and appointments arrays.");
+      data = parsed;
+      selected = null;
+      render();
+      renderModal();
+      toast("JSON imported into memory. Export JS data to keep it.");
+    } catch (error) {
+      toast(`Import failed: ${error.message}`);
     }
+  }
 
+  function resetData() {
+    if (!confirm("Discard all current in-memory edits and reload the original roster-data.js?")) return;
+    data = structuredClone(source);
+    selected = null;
+    collapsed.clear();
+    render();
+    renderModal();
+    toast("Original data restored.");
+  }
 
-    container.appendChild(
-        wrapper
-    );
+  function beginEdit(id) {
+    editingId = id;
+    renderModal();
+    setTimeout(() => $("#record-form")?.scrollIntoView({ block: "nearest", behavior: "smooth" }), 0);
+  }
 
-}
+  function activateNode(el) {
+    const id = el.dataset.select || el.dataset.selectUnit || el.dataset.personSelect;
+    if (!id) return;
+    selected = id;
+    render();
+  }
 
-
-/* =========================================================
-   UNIT TITLE MATCH
-========================================================= */
-
-function nodeTitleMatches(node) {
-
-    if (
-        !node ||
-        !currentSearch
-    ) {
-        return false;
+  // Main delegated click handling.
+  document.addEventListener("click", event => {
+    const toggle = event.target.closest("[data-toggle]");
+    if (toggle) {
+      event.stopPropagation();
+      const id = toggle.dataset.toggle;
+      collapsed.has(id) ? collapsed.delete(id) : collapsed.add(id);
+      renderMap();
+      return;
     }
+    const select = event.target.closest("[data-select], [data-select-unit], [data-person-select]");
+    if (select) { activateNode(select); return; }
 
+    if (event.target.closest("#manage")) { openModal("people"); return; }
+    if (event.target.closest("#close-modal")) { closeModal(); return; }
+    if (event.target.id === "modal") { closeModal(); return; }
+    const tab = event.target.closest("[data-tab]");
+    if (tab) { setTab(tab.dataset.tab); return; }
+    if (event.target.closest("[data-add-record]")) { editingId = "__new__"; renderModal(); return; }
+    const edit = event.target.closest("[data-edit-record]");
+    if (edit) { beginEdit(edit.dataset.editRecord); return; }
+    const del = event.target.closest("[data-delete-record]");
+    if (del) { deleteRecord(del.dataset.deleteRecord); return; }
+    if (event.target.closest("[data-cancel-form]")) { editingId = null; renderModal(); return; }
+    const editAppointment = event.target.closest("[data-edit-appointment]");
+    if (editAppointment) { openModal("appointments"); beginEdit(editAppointment.dataset.editAppointment); return; }
+    const editPerson = event.target.closest("[data-edit-person]");
+    if (editPerson) { openModal("people"); beginEdit(editPerson.dataset.editPerson); return; }
+    const editUnit = event.target.closest("[data-edit-unit]");
+    if (editUnit) { openModal("units"); beginEdit(editUnit.dataset.editUnit); return; }
+    const assign = event.target.closest("[data-assign]");
+    if (assign) { openModal("appointments"); beginEdit(assign.dataset.assign); return; }
+    const editTab = event.target.closest("[data-edit-tab]");
+    if (editTab) { openModal(editTab.dataset.editTab); return; }
+    if (event.target.closest("[data-export-js]")) { exportJS(); return; }
+    if (event.target.closest("[data-export-json]")) { exportJSON(); return; }
+    if (event.target.closest("[data-reset-data]")) { resetData(); return; }
+    if (event.target.closest("#expand-all")) { collapsed.clear(); renderMap(); return; }
+    if (event.target.closest("#collapse-all")) { data.appointments.forEach(a => { if (children(a.id).length) collapsed.add(a.id); }); renderMap(); return; }
+    if (event.target.closest("#reset-view")) { query = ""; $("#search").value = ""; collapsed.clear(); selected = null; render(); $("#map-viewport").scrollTo({ left: 0, top: 0, behavior: "smooth" }); return; }
+  });
 
-    return (
-        node.title || ""
-    )
-        .toLowerCase()
-        .includes(
-            currentSearch
-        );
+  document.addEventListener("submit", event => {
+    if (event.target.id === "record-form") saveRecord(event);
+  });
 
-}
-
-
-/* =========================================================
-   UNIT RENDERER
-========================================================= */
-
-function renderUnit(
-    unit,
-    container,
-    depth = 0
-) {
-
-    if (!unit) {
-        return;
+  document.addEventListener("change", event => {
+    if (event.target.id === "import-file" && event.target.files?.[0]) importJSON(event.target.files[0]);
+    // Update the incumbent dropdown choices when the appointment's unit changes.
+    if (event.target.name === "unitId" && activeTab === "appointments") {
+      const select = $("#record-form [name=personIds]");
+      const currentPeople = select ? [...select.selectedOptions].map(option => option.value) : [];
+      const selectedUnit = event.target.value;
+      if (select) select.innerHTML = data.people.filter(p => p.unitId === selectedUnit || currentPeople.includes(p.id)).map(p => `<option value="${esc(p.id)}" ${currentPeople.includes(p.id) ? "selected" : ""}>${esc(p.rank || "—")} · ${esc(p.name)}</option>`).join("");
+      const parentSelect = $("#record-form [name=parentId]");
+      if (parentSelect) {
+        const currentParent = parentSelect.value;
+        parentSelect.innerHTML = options(data.appointments.filter(a => a.id !== editingId && a.unitId === selectedUnit), currentParent, a => a.title, true);
+      }
     }
+  });
 
+  $("#search").addEventListener("input", event => {
+    query = norm(event.target.value.trim());
+    renderMap();
+  });
 
-    const section =
-        document.createElement("section");
-
-
-    section.className =
-        "roster-subunit";
-
-
-    /* ---------------------------------------------
-       UNIT HEADING
-    --------------------------------------------- */
-
-    const heading =
-        document.createElement("div");
-
-    heading.className =
-        "subunit-heading";
-
-
-    const title =
-        document.createElement("span");
-
-    title.className =
-        "subunit-title";
-
-
-    title.textContent =
-        unit.abbreviation
-            ? `${unit.abbreviation} / ${unit.title}`
-            : unit.title;
-
-
-    heading.appendChild(
-        title
-    );
-
-
-    section.appendChild(
-        heading
-    );
-
-
-    /* ---------------------------------------------
-       UNIT CONTENT
-    --------------------------------------------- */
-
-    const commandTree =
-        document.createElement("div");
-
-    commandTree.className =
-        "unit-command-tree";
-
-
-    /* ---------------------------------------------
-       UNIT COMMAND APPOINTMENT
-    --------------------------------------------- */
-
-    if (
-        unit.command &&
-        nodeMatchesSearch(unit.command)
-    ) {
-
-        renderCommandNode(
-            unit.command,
-            commandTree,
-            depth
-        );
-
+  document.addEventListener("keydown", event => {
+    if (event.key === "/" && !["INPUT", "TEXTAREA", "SELECT"].includes(document.activeElement.tagName)) {
+      event.preventDefault(); $("#search").focus();
     }
-
-
-    /* ---------------------------------------------
-       CHILD UNITS
-    --------------------------------------------- */
-
-    const visibleChildren =
-        (unit.children || [])
-            .filter(nodeMatchesSearch);
-
-
-    visibleChildren.forEach(
-        child => {
-
-            renderNode(
-                child,
-                commandTree,
-                depth + 1
-            );
-
-        }
-    );
-
-
-    if (
-        commandTree.children.length
-    ) {
-
-        section.appendChild(
-            commandTree
-        );
-
+    if (event.key === "Escape") closeModal();
+    if ((event.key === "Enter" || event.key === " ") && event.target.matches("[data-select], [data-select-unit], [data-person-select]")) {
+      event.preventDefault(); activateNode(event.target);
     }
+  });
 
-
-    /* ---------------------------------------------
-       DIRECT UNIT PERSONNEL
-    --------------------------------------------- */
-
-    renderPersonnelList(
-        unit.personnel || [],
-        section
-    );
-
-
-    /*
-        Keep the unit visible if its title itself
-        matches the search.
-    */
-
-    if (
-        section.querySelector(
-            ".roster-node"
-        ) ||
-        section.querySelector(
-            ".personnel-list"
-        ) ||
-        nodeTitleMatches(unit)
-    ) {
-
-        container.appendChild(
-            section
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   MAIN RENDER
-========================================================= */
-
-function renderRoster() {
-
-    const container =
-        document.getElementById(
-            "roster-list"
-        );
-
-
-    const empty =
-        document.getElementById(
-            "roster-empty"
-        );
-
-
-    const countLabel =
-        document.getElementById(
-            "search-count"
-        );
-
-
-    if (!container) {
-        return;
-    }
-
-
-    /*
-        Clear previous render.
-    */
-
-    container.replaceChildren();
-
-
-    /*
-        Render entire hierarchy.
-    */
-
-    roster.forEach(
-        node => {
-
-            renderNode(
-                node,
-                container,
-                0
-            );
-
-        }
-    );
-
-
-    /*
-        Count visible personnel.
-    */
-
-    const count =
-        Object.keys(personnel)
-            .filter(matchesPerson)
-            .length;
-
-
-    if (countLabel) {
-
-        countLabel.textContent =
-            `${count} PERSONNEL`;
-
-    }
-
-
-    if (empty) {
-
-        empty.classList.toggle(
-            "hidden",
-            count !== 0
-        );
-
-    }
-
-}
-
-
-/* =========================================================
-   SEARCH SETUP
-========================================================= */
-
-function setupSearch() {
-
-    const search =
-        document.getElementById(
-            "roster-search"
-        );
-
-
-    if (!search) {
-        return;
-    }
-
-
-    search.addEventListener(
-        "input",
-        event => {
-
-            currentSearch =
-                event.target.value
-                    .trim()
-                    .toLowerCase();
-
-
-            renderRoster();
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   FILTER SETUP
-========================================================= */
-
-function setupFilters() {
-
-    const filters =
-        document.querySelectorAll(
-            ".roster-filter"
-        );
-
-
-    filters.forEach(
-        filter => {
-
-            filter.addEventListener(
-                "click",
-                () => {
-
-                    currentStatus =
-                        filter.dataset.status ||
-                        "all";
-
-
-                    filters.forEach(
-                        other => {
-
-                            other.classList.toggle(
-                                "active",
-                                other === filter
-                            );
-
-                        }
-                    );
-
-
-                    renderRoster();
-
-                }
-            );
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   PROFILE MODAL
-========================================================= */
-
-function openProfile(person) {
-
-    const modal =
-        document.getElementById(
-            "personnel-modal"
-        );
-
-
-    if (!modal) {
-        return;
-    }
-
-
-    const fields = {
-
-        "profile-rank":
-            person.rank,
-
-        "profile-name":
-            person.name,
-
-        "profile-callsign":
-            person.callsign,
-
-        "profile-service-number":
-            person.serviceNumber,
-
-        "profile-status":
-            (
-                person.status ||
-                "active"
-            ).toUpperCase(),
-
-        "profile-unit":
-            person.unit,
-
-        "profile-appointment":
-            person.appointment,
-
-        "profile-join-date":
-            person.joinDate,
-
-        "profile-note":
-            person.note
-
-    };
-
-
-    Object.entries(fields)
-        .forEach(
-            ([id, value]) => {
-
-                const element =
-                    document.getElementById(
-                        id
-                    );
-
-
-                if (element) {
-
-                    element.textContent =
-                        value || "—";
-
-                }
-
-            }
-        );
-
-
-    modal.classList.add(
-        "open"
-    );
-
-
-    document.getElementById(
-        "profile-close"
-    )?.focus();
-
-}
-
-
-/* =========================================================
-   CLOSE PROFILE
-========================================================= */
-
-function closeProfile() {
-
-    document.getElementById(
-        "personnel-modal"
-    )?.classList.remove(
-        "open"
-    );
-
-}
-
-
-/* =========================================================
-   MODAL SETUP
-========================================================= */
-
-function setupModal() {
-
-    document.getElementById(
-        "profile-close"
-    )?.addEventListener(
-        "click",
-        closeProfile
-    );
-
-
-    document.getElementById(
-        "profile-backdrop"
-    )?.addEventListener(
-        "click",
-        closeProfile
-    );
-
-
-    document.addEventListener(
-        "keydown",
-        event => {
-
-            if (
-                event.key === "Escape"
-            ) {
-
-                closeProfile();
-
-            }
-
-        }
-    );
-
-}
-
-
-/* =========================================================
-   INITIALIZE
-========================================================= */
-
-document.addEventListener(
-    "DOMContentLoaded",
-    () => {
-
-        setupSearch();
-
-        setupFilters();
-
-        setupModal();
-
-        renderRoster();
-
-    }
-);
+  render();
+})();

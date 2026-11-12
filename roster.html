@@ -1,28 +1,23 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="theme-color" content="#070707">
-
-    <title>ISOC - Roster</title>
-
-    <link rel="icon" type="image/png" href="web_media/2.png">
-
-    <link rel="stylesheet" href="styles.css">
-    <link rel="stylesheet" href="roster.css">
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#101113">
+  <title>ISOC — Command Roster</title>
+  <link rel="icon" type="image/png" href="web_media/2.png">
+  <link rel="stylesheet" href="roster.css">
+  <script defer src="roster-data.js"></script>
+  <script defer src="roster.js"></script>
 </head>
-
 <body>
 
-<div class="top"></div>
-
-<!-- =========================================================
-     NAVIGATION
-========================================================== -->
-
-
-<nav>
+  <div class="topline"></div>
+  <!-- <header class="site-header">
+    <a class="brand" href="index.html"><span class="brand-mark">I</span><span>ISOC <small>HEADQUARTERS</small></span></a>
+    <div class="header-right"><span class="classification">ORGANIZATION DIRECTORY</span><span class="live-indicator">REGISTER VIEW</span></div>
+  </header> -->
+  <nav>
   <div class="wrap nav">
     <a class="brand" href="index.html">
       <img src="web_media/INSIGNIA-removebg-preview.png" alt="ISOC Logo" class="nav-logo">
@@ -107,511 +102,56 @@
     </div>
   </div>
 </nav>
-
-
-<!-- =========================================================
-     LIVE TIME STRIP
-========================================================== -->
-
-<div class="time-strip">
-
-    <div class="wrap time-strip-inner">
-
-        <div class="time-block">
-
-            <span class="time-label">
-                KSOL HQ
-            </span>
-
-            <span
-                id="hq-time"
-                class="time-value"
-            >
-                --:--:--
-            </span>
-
-            <span class="time-zone">
-                IST
-            </span>
-
-        </div>
-
-        <div class="time-divider"></div>
-
-        <div class="time-block">
-
-            <span class="time-label">
-                YOUR LOCAL TIME
-            </span>
-
-            <span
-                id="local-time"
-                class="time-value"
-            >
-                --:--:--
-            </span>
-
-            <span
-                id="local-zone"
-                class="time-zone"
-            >
-                LOCAL
-            </span>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     HERO
-========================================================== -->
-
-<header class="roster-hero">
-
-    <div class="roster-container">
-
-        <div class="roster-eyebrow">
-            KALI SPECIAL OPERATIONS LEGION / PERSONNEL
-        </div>
-
-        <div class="roster-hero-row">
-
-            <div>
-
-                <h1>ROSTER</h1>
-
-                <p>
-                    Current personnel and command appointments
-                    of the Kali Special Operations Legion.
-                </p>
-
-            </div>
-
-            <div class="register-stamp">
-
-                <span>REGISTER</span>
-                <strong>KSOL / PERS</strong>
-
-                <span>STATUS</span>
-                <strong>CURRENT</strong>
-
-            </div>
-
-        </div>
-
-    </div>
-
-</header>
-
-
-<!-- =========================================================
-     SEARCH / FILTERS
-========================================================== -->
-
-<section class="roster-container roster-controls">
-
-    <div class="roster-search">
-
-        <span class="roster-search-symbol">
-            /
-        </span>
-
-        <input
-            type="search"
-            id="roster-search"
-            placeholder="SEARCH PERSONNEL, APPOINTMENT OR UNIT"
-            autocomplete="off"
-            spellcheck="false"
-            aria-label="Search personnel"
-        >
-
-        <span
-            id="search-count"
-            class="roster-search-count"
-        >
-            ALL
-        </span>
-
-    </div>
-
-
-    <div class="roster-filter-row">
-
-        <span>
-            PERSONNEL STATUS
-        </span>
-
-        <div
-            class="roster-filters"
-            role="group"
-            aria-label="Personnel status"
-        >
-
-            <button
-                class="roster-filter active"
-                data-status="all"
-                type="button"
-            >
-                ALL
-            </button>
-
-            <button
-                class="roster-filter"
-                data-status="active"
-                type="button"
-            >
-                ACTIVE
-            </button>
-
-            <button
-                class="roster-filter"
-                data-status="loa"
-                type="button"
-            >
-                LOA
-            </button>
-
-            <button
-                class="roster-filter"
-                data-status="reserve"
-                type="button"
-            >
-                RESERVE
-            </button>
-
-            <button
-                class="roster-filter"
-                data-status="inactive"
-                type="button"
-            >
-                INACTIVE
-            </button>
-
-        </div>
-
-    </div>
-
-</section>
-
-
-<!-- =========================================================
-     ROSTER
-========================================================== -->
-
-<main class="roster-body">
-
-    <div class="roster-container">
-
-        <div id="roster-list"></div>
-
-        <div
-            id="roster-empty"
-            class="roster-empty hidden"
-        >
-
-            <div>/</div>
-
-            <strong>
-                NO PERSONNEL FOUND
-            </strong>
-
-            <p>
-                No personnel match the current search or filter.
-            </p>
-
-        </div>
-
-    </div>
-
-</main>
-
-
-<!-- =========================================================
-     PROFILE MODAL
-========================================================== -->
-
-<div
-    id="personnel-modal"
-    class="personnel-modal"
-    role="dialog"
-    aria-modal="true"
-    aria-labelledby="profile-name"
->
-
-    <div
-        id="profile-backdrop"
-        class="personnel-modal-backdrop"
-    ></div>
-
-    <div class="personnel-profile">
-
-        <button
-            id="profile-close"
-            class="profile-close"
-            type="button"
-            aria-label="Close personnel record"
-        >
-            ×
-        </button>
-
-        <div class="profile-eyebrow">
-            KSOL PERSONNEL RECORD
-        </div>
-
-        <div class="profile-header">
-
-            <div
-                id="profile-rank"
-                class="profile-rank"
-            >
-                --
-            </div>
-
-            <div>
-
-                <div
-                    id="profile-name"
-                    class="profile-name"
-                >
-                    --
-                </div>
-
-                <div
-                    id="profile-callsign"
-                    class="profile-callsign"
-                >
-                    --
-                </div>
-
-            </div>
-
-        </div>
-
-        <div class="profile-line"></div>
-
-        <div class="profile-grid">
-
-            <div class="profile-field">
-                <span>SERVICE NUMBER</span>
-                <strong id="profile-service-number">--</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>STATUS</span>
-                <strong id="profile-status">--</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>UNIT</span>
-                <strong id="profile-unit">--</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>APPOINTMENT</span>
-                <strong id="profile-appointment">--</strong>
-            </div>
-
-            <div class="profile-field">
-                <span>JOINED</span>
-                <strong id="profile-join-date">--</strong>
-            </div>
-
-            <div class="profile-field profile-wide">
-                <span>PERSONNEL NOTE</span>
-                <strong id="profile-note">--</strong>
-            </div>
-
-        </div>
-
-    </div>
-
-</div>
-
-
-<!-- =========================================================
-     FOOTER
-========================================================== -->
-
-<footer class="site-footer">
-
-    <!-- TOP COPYRIGHT LINE -->
-    <div class="footer-top">
-
-        <div class="wrap footer-top-inner">© 2026 INTERNATIONAL SPECIAL OPERATIONS COMMAND HEADQUARTERS — ALL RIGHTS RESERVED. DEVELOPED BY <a href="https://www.instagram.com/obi_onenairobi/"><b><u>VANDAM</u></b></a></div>
-
-    </div>
-
-
-    <!-- MAIN FOOTER -->
-    <div class="footer-main">
-
-        <div class="wrap footer-grid">
-
-
-            <!-- =================================================
-                 ORGANIZATION INFO
-            ================================================== -->
-
-            <div class="footer-brand">
-
-                <div class="footer-brand-title">
-
-                    <img src="web_media/INSIGNIA-removebg-preview.png" alt="KSOL Logo" class="footer-logo">
-
-                    <div>
-
-                        <strong>
-                            INTERNATIONAL SPECIAL OPERATIONS COMMAND
-                        </strong>
-
-                        <small>
-                            ISOC // HEADQUARTERS
-                        </small>
-
-                    </div>
-
-                </div>
-
-
-                <p>
-                    An international Roblox military realism
-                    organization focused on structured and bad*ss
-                    special operations, training,
-                    aviation and joint exercises.
-                </p>
-
-
-                <em>
-                    "MEN APART, EVERY MAN AN EMPEROR"
-                </em>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 NAVIGATION
-            ================================================== -->
-
-            <div class="footer-column">
-
-                <h4>
-                    NAVIGATION
-                </h4>
-
-                <a href="index.html">
-                    Home
-                </a>
-
-                <a href="ranks.html">
-                    Ranks
-                </a>
-
-                <a href="roster.html">
-                    Roster
-                </a>
-
-                <a href="appointments.html">
-                    ORBAT
-                </a>
-
-                <!-- <a href="awards.html">
-                    Decorations
-                </a>
-
-                <a href="qualifications.html">
-                    Qualifications
-                </a> -->
-                <a href="armoury.html">
-                    Armoury
-                </a>
-                <a href="uniforms.html">
-                    Uniforms
-                </a>
-                <!-- <a href="#">
-                    Job Centre
-                </a> -->
-                <a href="who-we-are.html">
-                    Who We Are
-                </a>
-                <a href="media.html">
-                    Showcase
-                </a>
-                <a href="documentation.html">
-                    Documentation
-                </a>
-
-            </div>
-
-
-
-            <!-- =================================================
-                 UNIT INFORMATION
-            ================================================== -->
-
-            <div class="footer-column">
-
-                <h4>
-                    UNIT INFO
-                </h4>
-
-                <span>
-                    Game: BRM5 & ARMA 3
-                </span>
-
-                <span>
-                    Type: Military Realism (Milsim)
-                </span>
-
-                <span>
-                    Formation: Unit
-                </span>
-
-                <span>
-                    INTERNATIONAL SPECIAL OPERATIONS COMMAND
-                </span>
-
-                <span>
-                    Region: International
-                </span>
-
-            </div>
-
-        </div>
-
-    </div>
-
-
-    <!-- =========================================================
-         BOTTOM LEGAL LINE
-    ========================================================== -->
-
-    <div class="footer-bottom">
-
-        <div class="wrap footer-bottom-inner">
-
-            <span>
-                © 2026 International Special Operations Command —
-                Fictional gaming organization.
-            </span>
-
-            <span>
-                Not affiliated with any government or military organization.
-            </span>
-
-        </div>
-
-    </div>
-
-</footer>
-
-
-
-<script src="script.js"></script>
-<script src="roster.js"></script>
-
+  <main class="shell">
+    <section class="hero">
+      <div class="eyebrow">INTERNATIONAL SPECIAL OPERATIONS COMMAND / HEADQUARTERS</div>
+      <div class="hero-row">
+        <div><h1>COMMAND <em>ROSTER</em></h1><p>Command appointments, unit organization, incumbents and responsibilities.</p></div>
+        <div class="edition"><span>REGISTER</span><strong>ISOC / HQ</strong><span>STRUCTURE</span><strong>2026</strong></div>
+      </div>
+      <div class="stats">
+        <div><b id="stat-units">05</b><span>ELEMENTS</span></div>
+        <div><b id="stat-appointments">00</b><span>APPOINTMENTS</span></div>
+        <div><b id="stat-personnel">00</b><span>PERSONNEL</span></div>
+        <div><b id="stat-vacant">00</b><span>VACANT POSTS</span></div>
+      </div>
+    </section>
+
+    <section class="controls">
+      <label class="search"><span>⌕</span><input id="search" type="search" placeholder="Search people, ranks, appointments, units or duties…" autocomplete="off"><kbd>/</kbd></label>
+      <div class="control-buttons">
+        <button class="button" id="expand-all">EXPAND ALL</button>
+        <button class="button" id="collapse-all">COLLAPSE ALL</button>
+        <button class="button" id="reset-view">RESET VIEW</button>
+        <button class="button primary" id="manage">EDIT REGISTER</button>
+      </div>
+    </section>
+
+    <div class="map-caption"><span>ORGANIZATIONAL STRUCTURE</span><span>SELECT ANY NODE TO INSPECT / USE + OR − TO EXPAND</span></div>
+    <section class="workspace">
+      <div class="map-viewport" id="map-viewport"><div class="org-map" id="org-map"></div></div>
+      <aside class="details" id="details"><div class="detail-empty"><span class="detail-seal">ISOC</span><small>COMMAND DIRECTORY</small><h2>Select an<br>organization node</h2><p>Appointment, incumbent, reporting line and duties will be displayed here.</p></div></aside>
+    </section>
+
+    <section class="personnel-section">
+      <div class="section-heading"><div><span class="eyebrow">PERSONNEL INDEX</span><h2>UNIT ROSTERS</h2></div><p>Personnel assigned to a unit but not occupying one of its displayed command appointments.</p></div>
+      <div class="unit-rosters" id="unit-rosters"></div>
+    </section>
+    <footer class="page-footer"><span>ISOC // INTERNAL ORGANIZATION REGISTER</span><span>VACANT APPOINTMENTS ARE RETAINED FOR STRUCTURAL CLARITY</span></footer>
+  </main>
+
+  <div class="modal-backdrop" id="modal" hidden>
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="modal-title">
+      <header class="modal-header"><div><span class="eyebrow">REGISTER MANAGEMENT</span><h2 id="modal-title">EDIT ORGANIZATION</h2></div><button class="close" id="close-modal" aria-label="Close">×</button></header>
+      <nav class="tabs">
+        <button class="tab active" data-tab="people">PERSONNEL</button>
+        <button class="tab" data-tab="appointments">APPOINTMENTS</button>
+        <button class="tab" data-tab="units">UNITS</button>
+        <button class="tab" data-tab="data">DATA / BACKUP</button>
+      </nav>
+      <div class="modal-content" id="modal-content"></div>
+    </section>
+  </div>
+  <div class="toast" id="toast" role="status" aria-live="polite"></div>
 </body>
 </html>
